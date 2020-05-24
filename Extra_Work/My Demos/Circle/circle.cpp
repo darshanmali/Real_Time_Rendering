@@ -72,7 +72,6 @@ void display(void)
 		glVertex3f(cos(i)*0.2f, sin(i)*0.2f, 0.0f);
 
     }
-
 	glEnd();
 	glFlush();
 }
