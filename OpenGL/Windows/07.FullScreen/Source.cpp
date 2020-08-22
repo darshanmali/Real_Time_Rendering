@@ -5,11 +5,12 @@
 //Global Function Declaration 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-
-// Global Variables Declaration 
+//First step for fullscreen														Step : 1
+// Global Variables Declaration 3
 DWORD dwStyle_D;
-WINDOWPLACEMENT wpPrev_D = {sizeof(WINDOWPLACEMENT)};
-bool gdFullScreen_D = false;
+WINDOWPLACEMENT wpPrev_D = {sizeof(WINDOWPLACEMENT)};//store the previous windows placement inform 
+bool gbFullScreen_D = false;
+
 HWND ghwnd_D = NULL;
 
 
@@ -39,6 +40,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR LpszCmdLin
 	wndclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
 	RegisterClassEx(&wndclass);
+
 	x = GetSystemMetrics(SM_CXSCREEN);
 	y = GetSystemMetrics(SM_CYSCREEN);
 
@@ -55,7 +57,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR LpszCmdLin
 		NULL,
 		hInstance,
 		NULL);
-	
+
+	//change in winMain																				step 2
 	ghwnd_D = hwnd;
 
 	ShowWindow(hwnd, iCmdShow);
@@ -77,6 +80,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	TCHAR hw[] = TEXT("Hello World !");
 
+	//Declare the function or signature or prototype												step 3
 
 	//Local Function 
 	void ToggelFullScreen(void);
@@ -95,7 +99,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case WM_KEYDOWN:
 			switch (wParam)
 			{
-				case 0x46:
+				case 0x46://																		step3.B
 				case 0x66:
 					ToggelFullScreen();
 					break;
@@ -111,35 +115,56 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return(DefWindowProc(hwnd, iMsg, wParam, lParam));
 }
-
+//\																								step 4 last 
 void ToggelFullScreen()
 {
 	//Local Variable Declare
 	MONITORINFO mi_D = { sizeof(MONITORINFO) };
 
 	//Code
-	if (gdFullScreen_D == false)
+	if (gbFullScreen_D == false)
 	{
+		//WS_CAPTION | WS_MINIMIZE | WS_MAXIMIZE | WS_THICKFRAME | WS_SYSMENU | WS_OVERLAPPED
 		dwStyle_D = GetWindowLong(ghwnd_D, GWL_STYLE);
 		if (dwStyle_D & WS_OVERLAPPEDWINDOW)
 		{
+			  //MonitorFromWindow()       1. ghwnd (windows cha handle ), 2. Monitorinfo_primary ( jyala majha current adapter lavalay to tya monitor chi info de. )
 			if (GetWindowPlacement(ghwnd_D, &wpPrev_D) && GetMonitorInfo(MonitorFromWindow(ghwnd_D,MONITORINFOF_PRIMARY),&mi_D))
 			{
 				SetWindowLong(ghwnd_D, GWL_STYLE, (dwStyle_D &~ WS_OVERLAPPEDWINDOW));
-				SetWindowPos(ghwnd_D, HWND_TOP, mi_D.rcMonitor.left, mi_D.rcMonitor.top, mi_D.rcMonitor.right - mi_D.rcMonitor.left, mi_D.rcMonitor.bottom - mi_D.rcMonitor.top, SWP_NOZORDER | SWP_FRAMECHANGED); // SWP_FRAMECHANGED = WM_NCCALCSIZE      
+
+				//										X					Y								WIDTH											
+				SetWindowPos(ghwnd_D, HWND_TOP, mi_D.rcMonitor.left, mi_D.rcMonitor.top, mi_D.rcMonitor.right - mi_D.rcMonitor.left,
+		//						HEIGHT					Don'tchange Z Order  | SWP_ WM_NCCALCSIZE
+				 mi_D.rcMonitor.bottom - mi_D.rcMonitor.top, SWP_NOZORDER | SWP_FRAMECHANGED); // SWP_FRAMECHANGED = WM_NCCALCSIZE      
+				 // 														" WM_NCCALSIZE " Ha Msg aaplya window la pathvala jato i.e. aas mhanto ki baba 
+				//																hya window cha nonclient are calculate kara 
 			}
 			
 		}
 		ShowCursor(FALSE);
-		gdFullScreen_D = true;
-	}
+		gbFullScreen_D = true;
+	}    
 	else
 	{
 		SetWindowLong(ghwnd_D, GWL_STYLE, (dwStyle_D | WS_OVERLAPPEDWINDOW));
 		SetWindowPlacement(ghwnd_D, &wpPrev_D);
-		SetWindowPos(ghwnd_D, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_FRAMECHANGED);
+		//x,ywidth,hight aapan 0 dilet karan aapan wpPrevmadhe aapan dillet  
+		SetWindowPos(ghwnd_D, HWND_TOP, 0, 0, 0, 0,
+		
+		//dont move wnd position (x,y)
+		 SWP_NOMOVE |
+		//dont change its size (width, height)
+		 SWP_NOSIZE |
+		//if dady changes its order still you don't changed your.
+		 SWP_NOOWNERZORDER |
+		//
+		SWP_NOZORDER |
+		//
+		SWP_FRAMECHANGED);
+		
 		ShowCursor(TRUE);
-		gdFullScreen_D = false;
+		gbFullScreen_D = false;
 	}
 
 }
