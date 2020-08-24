@@ -1,9 +1,11 @@
 #include<windows.h>
+#include"Header.h"
 #include<gl/GL.h>
 #include<stdio.h>
 #include<gl/GLU.h>
 
 #pragma comment(lib,"OpenGL32.lib")
+#pragma comment(lib,"Glu32.lib")
 
 #define WIN_WIDTH_DM 800
 #define WIN_HEIGHT_DM 600
@@ -24,11 +26,9 @@ FILE* gpFile_DM = NULL;
 
 
 //Local Function 
-
 void Resize(int, int);
 void unInitialize(void);
 void Display(void);
-
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine, int iCmdShow)
@@ -60,8 +60,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
     wndclassex.lpfnWndProc = WndProc;
     wndclassex.lpszMenuName = NULL;
     wndclassex.hInstance = hInstance;
-    wndclassex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-    wndclassex.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
+    wndclassex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MYICON));
+    wndclassex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MYICON));
     wndclassex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wndclassex.hCursor = LoadCursor(NULL, IDC_ARROW);
 
@@ -134,6 +134,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     switch (iMsg)
     {
+    case WM_PAINT:
+       // Display();
+        break;
 
     case WM_SETFOCUS:
         gbActiveWindows_DM = true;
@@ -255,87 +258,51 @@ void Initialize()
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    //Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
+    Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 void Resize(int width, int height)
 {
+    if (height == 0)
+    {
+        height = 1;
+    }
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    gluPerspective( 44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 }
 
 void Display()
 {
-    //Local Function declaration
-    void WhiteColorTrangle(void);
-    void MultiColorTrangle(void);
-    void WhiteColorRectTrangle(void);
-
+ 
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    WhiteColorTrangle();
-    glTranslatef(0.5f, 0.0f, 0.0f);
-    MultiColorTrangle();
-    glTranslatef(0.0f, 0.5f, 0.0f);
-    WhiteColorRectTrangle();
+    glTranslatef(0.0f, 0.0f, -3.0f);
+
+    glBegin(GL_TRIANGLES);
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
+
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.1f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+
+    glEnd();
 
     SwapBuffers(ghdc_DM);
 
 }
 
-void WhiteColorTrangle(void)
-{
-    //code
-    glBegin(GL_TRIANGLES);
-
-    glVertex3f(0.0f, 0.1f, 0.0f);
-
-    glVertex3f(-0.1f, -0.1f, 0.0f);
-
-    glVertex3f(0.1f, -0.1f, 0.0f);
-
-    glEnd();
-}
-
-void MultiColorTrangle(void)
-{
-    //code
-    glBegin(GL_TRIANGLES);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.1f, 0.0f);
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-0.1f, -0.1f, 0.0f);
-
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.1f, -0.1f, 0.0f);
-
-    glEnd();
-
-}
-
-void WhiteColorRectTrangle(void)
-{
-    //code
-    glBegin(GL_QUADS);
-
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(0.1f, 0.1f, 0.0f);
-
-    glVertex3f(-0.1f, 0.1f, 0.0f);
-
-    glVertex3f(-0.1f, -0.1f, 0.0f);
-
-    glVertex3f(0.1f, -0.1f, 0.0f);
- 
-    glEnd();
-
-}
 
 void unInitialize()
 {
