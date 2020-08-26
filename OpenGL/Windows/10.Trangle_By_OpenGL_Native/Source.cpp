@@ -117,7 +117,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
                // Here You should call Display Fuction for openGl Redering
 
-              Display();
+                Display();
             }
         }
 
@@ -218,7 +218,7 @@ void Initialize()
 
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
     pfd.nVersion = 1;
-    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL;
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.cColorBits = 32;
     pfd.cRedBits = 8;
@@ -257,19 +257,20 @@ void Initialize()
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 
-    Resize(WIN_WIDTH, WIN_HEIGHT);
+    //Resize(WIN_WIDTH, WIN_HEIGHT);
 }
 void Resize(int width, int height)
 {
-   
+
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
 }
 
 void Display()
 {
-   
+
     glClear(GL_COLOR_BUFFER_BIT);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glBegin(GL_TRIANGLES);
@@ -285,7 +286,7 @@ void Display()
 
     glEnd();
 
-    glFlush();
+    SwapBuffers(ghdc);
 
 }
 void unInitialize()

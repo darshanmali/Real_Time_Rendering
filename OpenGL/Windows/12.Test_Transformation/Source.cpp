@@ -1,4 +1,5 @@
-#include<windows.h>
+﻿#include<windows.h>
+#include"Header.h"
 #include<gl/GL.h>
 #include<stdio.h>
 #include<gl/GLU.h>
@@ -60,8 +61,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
     wndclassex.lpfnWndProc = WndProc;
     wndclassex.lpszMenuName = NULL;
     wndclassex.hInstance = hInstance;
-    wndclassex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-    wndclassex.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
+    wndclassex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MYICON));
+    wndclassex.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MYICON));
     wndclassex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wndclassex.hCursor = LoadCursor(NULL, IDC_ARROW);
 
@@ -332,7 +333,7 @@ void WhiteColorRectTrangle(void)
     glVertex3f(-0.1f, -0.1f, 0.0f);
 
     glVertex3f(0.1f, -0.1f, 0.0f);
- 
+
     glEnd();
 
 }
