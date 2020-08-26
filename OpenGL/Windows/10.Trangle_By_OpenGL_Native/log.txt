@@ -1,0 +1,8 @@
+
+0.Inside Resise :
+Width : 784	 height : 561.
+Leaving Resize!!
+
+1.Inside Resise :
+Width : 800	 height : 600.
+Leaving Resize!!
