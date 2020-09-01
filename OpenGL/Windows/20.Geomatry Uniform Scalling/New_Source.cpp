@@ -287,17 +287,17 @@ void Display()
 
         fprintf_s(gpFile_DM, "%f\n", increment);
         glScalef(increment, 0.8f + increment, 0.0f);
-        increment = increment + 0.4f;
+        increment = increment + 0.01f;
         ButtonFlag_DM = 0;
     }
 
     if (increment >= 2.0f)
     {
-        increment = 0.2f;
+        increment = 0.01f;
         fprintf_s(gpFile_DM,"%f\n",increment);
     }
 
-    glScalef(increment, 0.8f + increment, 0.0f);
+    glScalef(increment, increment, 0.0f);
 
     glBegin(GL_TRIANGLES);
 
