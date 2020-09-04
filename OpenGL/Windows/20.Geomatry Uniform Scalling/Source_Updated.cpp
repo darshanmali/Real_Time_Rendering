@@ -286,7 +286,6 @@ void Display()
     if (ButtonFlag_DM == 1) {
 
         fprintf_s(gpFile_DM, "%f\n", increment);
-        glScalef(increment, 0.8f + increment, 0.0f);
         increment = increment + 0.01f;
         ButtonFlag_DM = 0;
     }
