@@ -23,8 +23,7 @@ bool gbActiveWindows_DM = false;
 HDC ghdc_DM = NULL;
 HGLRC ghrc_DM = NULL;
 FILE* gpFile_DM = NULL;
-GLfloat Tangle = 0.0f;
-GLfloat Rangle = 0.0f;
+
 
 //Local Function 
 void Resize(int, int);
@@ -74,7 +73,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY 2D Trangle And 2D Quad Animation !"),
+        TEXT("MY 2D Trangle And 2D Quad !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -278,70 +277,30 @@ void Resize(int width, int height)
 
 void Display()
 {
-    
-
-    void Update(void);
 
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
+    gluLookAt(0.0f, 0.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    glTranslatef(-1.0f, 0.0f, -3.0f);
-    glRotatef(Tangle, 0.0f, 1.0f, 0.0f);
-
+    
     glBegin(GL_TRIANGLES);
 
     glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.5f, 0.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
 
     glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-0.5f, -0.5f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
 
     glColor3f(0.0f, 0.1f, 1.0f);
-    glVertex3f(0.5f, -0.5f, 0.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
 
     glEnd();
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 
-    glTranslatef(1.0f, 0.0f, -3.0f);
-    glRotatef(Rangle, 1.0f, 0.0f, 0.0f);
-
-    glBegin(GL_QUADS);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-0.5f, 0.5f, 0.0f);
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-0.5f, -0.5f, 0.0f);
-
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.5f, -0.5f, 0.0f);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, 0.5f, 0.0f);
-
-    glEnd();
-    Update();
     SwapBuffers(ghdc_DM);
-
-}
-void Update()
-{
-    if (Tangle >= 360.0f)
-    {
-        Tangle = 0.0f;
-    }
-    Tangle = Tangle + 0.1f;
-
-    if (Rangle >= 360.0f)
-    {
-        Rangle = 0.0f;
-    }
-    Rangle = Rangle + 0.1f;
 
 }
 
