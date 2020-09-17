@@ -127,6 +127,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+    RECT rc_DM;
+
     //Function
     void ToggelFullScreen(void);
 
@@ -134,8 +136,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_PAINT:
-        // Display();
+        GetClientRect(hwnd, &rc_DM);
+        Resize(rc_DM.right, rc_DM.bottom);
         break;
+
 
     case WM_SETFOCUS:
         gbActiveWindows_DM = true;
@@ -268,6 +272,9 @@ void Resize(int width, int height)
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
     gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 
@@ -280,37 +287,12 @@ void Display()
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glBegin(GL_LINES);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(1.0f, 0.0f, 0.0f);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-1.0f, 0.0f, 0.0f);
-
-    for (i = 0.05f; i <= 1.0f; i = i + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(1.0f, i, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-1.0f, i, 0.0f);
-    }
-
-    for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(1.0f, -j, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-1.0f, -j, 0.0f);
-    }
-
-    glEnd();
-
+    glTranslatef(0.0f, 0.0f, -3.0f);
+    //Y Axis 
     glBegin(GL_LINES);
 
     glColor3f(1.0f, 1.0f, 0.0f);
@@ -328,6 +310,12 @@ void Display()
         glVertex3f(-i, -1.0f, 0.0f);
     }
 
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+
     for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
     {
         glColor3f(0.0f, 0.0f, 1.0f);
@@ -336,6 +324,11 @@ void Display()
         glColor3f(0.0f, 0.0f, 1.0f);
         glVertex3f(j, -1.0f, 0.0f);
     }
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
 
     glEnd();
 

@@ -72,7 +72,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Rectangle With Graph Assignment !"),
+        TEXT("MY Trangle with Graph Assignment !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -127,6 +127,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+    RECT rc;
+
     //Function
     void ToggelFullScreen(void);
 
@@ -134,7 +136,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_PAINT:
-        // Display();
+        GetClientRect(hwnd, &rc);
+        Resize(rc.right, rc.bottom);
         break;
 
     case WM_SETFOCUS:
@@ -257,7 +260,7 @@ void Initialize()
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    //Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
+    Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 void Resize(int width, int height)
 {
@@ -267,6 +270,9 @@ void Resize(int width, int height)
     }
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
     gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
@@ -282,6 +288,7 @@ void Display()
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -3.0f);
 
     glBegin(GL_LINES);
 
@@ -300,6 +307,12 @@ void Display()
         glVertex3f(-1.0f, i, 0.0f);
     }
 
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+
     for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
     {
         glColor3f(0.0f, 0.0f, 1.0f);
@@ -308,8 +321,53 @@ void Display()
         glColor3f(0.0f, 0.0f, 1.0f);
         glVertex3f(-1.0f, -j, 0.0f);
     }
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
 
     glEnd();
+
+    glBegin(GL_LINES);
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -1.0f, 0.0f);
+
+    for (i = 0.05f; i <= 1.0f; i = i + 0.05f)
+    {
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(-i, 1.0f, 0.0f);
+
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(-i, -1.0f, 0.0f);
+    }
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+
+    for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
+    {
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(j, 1.0f, 0.0f);
+
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(j, -1.0f, 0.0f);
+    }
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+
+    glEnd();
+
 
     glBegin(GL_LINES);
 
@@ -342,29 +400,22 @@ void Display()
 
     glBegin(GL_LINES);
     glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(-0.5f, 0.5f, 0.5f);
+    glVertex3f(0.0f, 0.5f, 0.0f);
 
     glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(-0.5f, -0.5f, 0.5f);
+    glVertex3f(-0.5f, -0.5f, 0.0f);
+    
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(-0.5f, -0.5f, 0.0f);
 
     glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(-0.5f, -0.5f, 0.5f);
+    glVertex3f(0.5f, -0.5f, 0.0f);
 
     glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, -0.5f, 0.5f);
+    glVertex3f(0.5f, -0.5f, 0.0f);
 
     glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, -0.5f, 0.5f);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, 0.5f, 0.5f);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, 0.5f, 0.5f);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(-0.5f, 0.5f, 0.5f);
-
+    glVertex3f(0.0f, 0.5f, 0.0f);
     glEnd();
 
     SwapBuffers(ghdc_DM);

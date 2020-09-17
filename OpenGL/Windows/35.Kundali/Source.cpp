@@ -23,12 +23,15 @@ bool gbActiveWindows_DM = false;
 HDC ghdc_DM = NULL;
 HGLRC ghrc_DM = NULL;
 FILE* gpFile_DM = NULL;
+const int circle_Points = 1000;
+int Color_flag = 0;
 
 
 //Local Function 
 void Resize(int, int);
 void unInitialize(void);
 void Display(void);
+void Vertexcall(GLfloat, GLfloat, GLfloat, GLfloat);
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine, int iCmdShow)
@@ -65,7 +68,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
     wndclassex.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wndclassex.hCursor = LoadCursor(NULL, IDC_ARROW);
 
-
     RegisterClassEx(&wndclassex);
 
     x = GetSystemMetrics(SM_CXSCREEN);
@@ -73,7 +75,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY X Line Assignment !"),
+        TEXT("MY consentric Cicle Assignment !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -128,6 +130,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+    RECT rc;
+
+
     //Function
     void ToggelFullScreen(void);
 
@@ -135,7 +140,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_PAINT:
-        // Display();
+        GetClientRect(hwnd, &rc);
+        Resize(rc.right, rc.bottom);
         break;
 
     case WM_SETFOCUS:
@@ -269,6 +275,9 @@ void Resize(int width, int height)
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
     gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 
@@ -277,41 +286,46 @@ void Resize(int width, int height)
 void Display()
 {
 
-    static GLfloat i,j;
+    int i;
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glBegin(GL_LINES);
+    glTranslatef(0.0f, 0.0f, -3.0f);
 
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(1.0f, 0.0f, 0.0f);
+    // Colors Must be   RGB C = grean + Blue M = red + Blue Y = red + Gean W  Grey = .5 +.5 +.5 , orenge = 1.0  + 0.5 + 0.0 , your choice 
+    glBegin(GL_LINE_LOOP);
 
-    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+
+    glVertex3f(1.0f, -1.0f, 0.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
+
+    glEnd();
+    
+    glBegin(GL_LINE_LOOP);
+
+    glVertex3f(0.0f, 1.0f, 0.0f);
     glVertex3f(-1.0f, 0.0f, 0.0f);
 
-    for (i = 0.05f; i <= 1.0f; i = i + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-1.0f, i, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(1.0f, i, 0.0f);
-    }
-    
-    for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-1.0f, -j, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(1.0f, -j, 0.0f);
-    }
+    glVertex3f(0.0f, -1.0f, 0.0f);
+    glVertex3f(1.0f, 0.0f, 0.0f);
 
     glEnd();
 
+    glBegin(GL_LINE_LOOP);
+
+    glVertex3f(-1.0f, 1.0f, 0.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
+
+    glVertex3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, 0.0f);
+
+    glEnd();
+    
     SwapBuffers(ghdc_DM);
 
 }

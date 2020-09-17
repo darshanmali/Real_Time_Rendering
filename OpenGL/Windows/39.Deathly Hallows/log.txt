@@ -1,0 +1,8 @@
+Triangle's Area = 2.000000
+Triangle Center Co-Ordinates(x,Y) :	 (0.000000 , -0.381966)
+
+perimeter = 6.472136
+Three sides of Triangle : ab = 2.236068 	 bc = 2.236068 	 ca = 2.000000
+
+Semi-Perimeter = 3.236068
+InCircle's redios : 0.618034
