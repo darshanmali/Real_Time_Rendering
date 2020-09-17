@@ -32,7 +32,13 @@ GLfloat T_b = 0.0f, T_h = 0.0f, T_area = 0.0f;
 int i = 1;
 GLfloat increment_Line = 3.0f;
 GLfloat increment_Triangle = 3.5f;
+GLfloat increment_Circle = 3.5f;
+
 GLfloat angle = 0.0f;
+
+GLfloat x_all = 0.0f, y_all = 0.0f;
+GLfloat s = 0.0f, p = 0.0f, in_r = 0.0f, ab = 0.0f, bc = 0.0f, ca = 0.0f;
+
 
 //Local Function 
 void Resize(int, int);
@@ -83,7 +89,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY consentric Circle Assignment !"),
+        TEXT("MY Deathly Hallows Dynamic Assignment !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -242,6 +248,45 @@ void Initialize()
     pfd_DM.cBlueBits = 8;
     pfd_DM.cAlphaBits = 8;
 
+    //code for the Circle math
+    //calculating the Distance of lines x1,x2,y1,y2
+    //Left side of triangle
+    calculate_Distance(-1.0f, 0.0f, -1.0f, 1.0f, &ab);
+
+    //Right side of triangle
+    calculate_Distance(0.0f, 1.0f, 1.0f, -1.0f, &bc);
+
+    //Bottom side of triangle
+    calculate_Distance(1.0f, -1.0f, -1.0f, -1.0f, &ca);
+
+    //I Fount the Perimter 
+    p = ab + bc + ca;
+
+    //I Fount the Semiperimeter
+    s = p / 2;
+
+    //by heron's Formula for calculating the area of triangle 
+    T_area = sqrtf(s * (s - ab) * (s - bc) * (s - ca));
+
+    // I Tried to find the radious of circle 
+    in_r = (T_area * 2) / p;
+
+    //finding the center of trangle 
+    x_all = ((ab * (-1)) + (ca * (0)) + (ab * 1)) / p;
+    y_all = ((ab * (-1)) + (ca * (1)) + (ab * -1)) / p;
+
+    if (i == 1)
+    {
+        fprintf_s(gpFile_DM, "Triangle's Area = %f\nTriangle Center Co-Ordinates(x,Y) :\t (%f , %f)\n", T_area, x_all, y_all);
+
+        fprintf_s(gpFile_DM, "\nperimeter = %f\nThree sides of Triangle : ab = %f \t bc = %f \t ca = %f\n", p, ab, bc, ca);
+
+        fprintf_s(gpFile_DM, "\nSemi-Perimeter = %f\nInCircle's redios : %f\n", s, in_r);
+        //fprintf_s(gpFile_DM, "\nHeight = %f",T_h);
+
+        i++;
+    }
+
     iPixelFormatIndex_DM = ChoosePixelFormat(ghdc_DM, &pfd_DM);
 
     if (iPixelFormatIndex_DM == 0)
@@ -296,33 +341,37 @@ void Display()
 
     void updatevoid();
 
-    
-    GLfloat x_all = 0.0f, y_all = 0.0f;
-    GLfloat s = 0.0f, p = 0.0f, in_r = 0.0f, ab = 0.0f, bc = 0.0f, ca = 0.0f;
-
-
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
+    //Triangle Animation Began
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    glLineWidth(2.0f);
 
     glTranslatef(-increment_Triangle, -increment_Triangle, -6.0f);
 
     if (increment_Triangle >= 0.0f)
     {
-        increment_Triangle = increment_Triangle - 0.001f;
+        increment_Triangle = increment_Triangle - 0.005f;
         glRotatef(angle, 0.0f, 1.0f, 0.0f);
+        
+        glBegin(GL_LINES);
+        Vertexcall(1.0f, 1.0f, 0.0f, 0.0f);
+        glEnd();
+
     }
-    
+    else
+    {
+        glTranslatef( 0.0f, 0.0f, 0.0f);
 
-    glLineWidth(2.0f);
-    glBegin(GL_LINES);
-
-    Vertexcall(1.0f, 1.0f, 0.0f, 0.0f);
-
-    glEnd();
-
+        glBegin(GL_LINES);
+        Vertexcall(1.0f, 1.0f, 0.0f, 0.0f);
+        glEnd();
+    }
+       
+    // Single Line  
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -333,66 +382,31 @@ void Display()
         
         if (increment_Line >= 1.0)
         {
-            increment_Line = increment_Line - 0.001f;
+            increment_Line = increment_Line - 0.005f;
         }
         else
         {
-            increment_Line = increment_Line - 0.0007f;
+            increment_Line = increment_Line - 0.0035f;
         }
     }
-        
     
-    // Single Line  
     glBegin(GL_LINES);
     glColor3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f, -1.0f, 0.0f);
-
     glEnd();
     
-    
+    //Circle Begans here
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glTranslatef(0.0f, 0.0f, -6.0f);
-    //calculating the Distance of lines x1,x2,y1,y2
-    //Left side of triangle
-    calculate_Distance(-1.0f, 0.0f, -1.0f, 1.0f, &ab);
-
-    //Right side of triangle
-    calculate_Distance(0.0f, 1.0f, 1.0f, -1.0f, &bc);
-
-    //Bottom side of triangle
-    calculate_Distance(1.0f, -1.0f, -1.0f, -1.0f, &ca);
-
-    //I Fount the Perimter 
-    p = ab + bc + ca;
-
-    //I Fount the Semiperimeter
-    s = p / 2;
-
-    //by heron's Formula for calculating the area of triangle 
-    T_area = sqrtf(s * (s - ab) * (s - bc) * (s - ca));
-
-    // I Tried to find the radious of circle 
-    in_r = (T_area * 2) / p;
-
-    //finding the center of trangle 
-    x_all = ((ab * (-1)) + (ca * (0)) + (ab * 1)) / p;
-    y_all = ((ab * (-1)) + (ca * (1)) + (ab * -1)) / p;
-
-    if (i == 1)
+    glTranslatef( increment_Circle, -increment_Circle, -6.0f);
+    
+    if (increment_Circle >= 0.0f)
     {
-        fprintf_s(gpFile_DM, "Triangle's Area = %f\nTriangle Center Co-Ordinates(x,Y) :\t (%f , %f)\n", T_area, x_all, y_all);
-
-        fprintf_s(gpFile_DM, "\nperimeter = %f\nThree sides of Triangle : ab = %f \t bc = %f \t ca = %f\n", p, ab, bc, ca);
-
-        fprintf_s(gpFile_DM, "\nSemi-Perimeter = %f\nInCircle's redios : %f\n", s, in_r);
-        //fprintf_s(gpFile_DM, "\nHeight = %f",T_h);
-
-        i++;
+           increment_Circle = increment_Circle - 0.005f;
+           glRotatef(angle, 0.0f, 1.0f, 0.0f);
     }
-
 
     glTranslatef(x_all, y_all, 0.0f);
     glColor3f(0.0f, 1.0f, 1.0f);
@@ -414,8 +428,8 @@ void Display()
 
 void updatevoid()
 {
-    angle = angle + 0.1f;
-    if (angle == 360.0f)
+    angle = angle + 1.0f;
+    if (angle >= 360.0f)
     {
         angle = 0.1f;
     }
