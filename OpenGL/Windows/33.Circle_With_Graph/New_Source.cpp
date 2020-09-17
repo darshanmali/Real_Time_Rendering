@@ -12,7 +12,6 @@
 #define WIN_HEIGHT_DM 600
 #define PI 3.141592653589793238
 
-
 //Global Fuction 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -26,7 +25,6 @@ bool gbActiveWindows_DM = false;
 HDC ghdc_DM = NULL;
 HGLRC ghrc_DM = NULL;
 FILE* gpFile_DM = NULL;
-const int circle_Points = 1000;
 
 
 //Local Function 
@@ -76,7 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Cicle using Line_Loop With Graph Assignment !"),
+        TEXT("MY Cicle With Graph Assignment !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -133,12 +131,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
     //Function
     void ToggelFullScreen(void);
+    RECT rc;
 
 
     switch (iMsg)
     {
+    case WM_CREATE:
+        
+        break;
     case WM_PAINT:
-        // Display();
+        GetClientRect(hwnd, &rc);
+        Resize(rc.right, rc.bottom);
         break;
 
     case WM_SETFOCUS:
@@ -163,6 +166,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_SIZE:
+
         Resize(LOWORD(lParam), HIWORD(lParam));
         break;
 
@@ -261,7 +265,7 @@ void Initialize()
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    //Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
+    Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 void Resize(int width, int height)
 {
@@ -272,20 +276,23 @@ void Resize(int width, int height)
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
-    gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    gluPerspective(-44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 
 }
 
 void Display()
 {
-
     static GLfloat i, j;
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -3.0f);
 
     glBegin(GL_LINES);
 
@@ -344,10 +351,10 @@ void Display()
     glEnd();
 
 
-    glBegin(GL_LINE_LOOP);
+    glBegin(GL_POINTS);
 
     glColor3f(1.0f, 1.0f, 0.0f);
-    for (GLfloat angle = 0.0f; angle <= 2 * PI * (circle_Points); angle = angle + 0.1f)
+    for (GLfloat angle = 0.0f; angle <= 2 * PI; angle = angle + 0.0001f)
     {
         glVertex3f((GLfloat)cos(angle), (GLfloat)sin(angle), 0.0f);
 
@@ -358,6 +365,7 @@ void Display()
     SwapBuffers(ghdc_DM);
 
 }
+
 
 void unInitialize()
 {

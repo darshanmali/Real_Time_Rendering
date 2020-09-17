@@ -3,12 +3,15 @@
 #include<gl/GL.h>
 #include<stdio.h>
 #include<gl/GLU.h>
+#include<math.h>
 
 #pragma comment(lib,"OpenGL32.lib")
 #pragma comment(lib,"Glu32.lib")
 
 #define WIN_WIDTH_DM 800
 #define WIN_HEIGHT_DM 600
+#define PI 3.141592653589793238
+
 
 //Global Fuction 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -25,13 +28,15 @@ HGLRC ghrc_DM = NULL;
 FILE* gpFile_DM = NULL;
 const int circle_Points = 1000;
 int Color_flag = 0;
-
+GLfloat T_b = 0.0f, T_h = 0.0f,T_area = 0.0f;
+int i = 1;
 
 //Local Function 
 void Resize(int, int);
 void unInitialize(void);
 void Display(void);
 void Vertexcall(GLfloat, GLfloat, GLfloat, GLfloat);
+void calculate_Distance(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat *);
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine, int iCmdShow)
@@ -75,7 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY consentric Cicle Assignment !"),
+        TEXT("MY consentric Circle Assignment !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -130,6 +135,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+
+    RECT rc;
+
     //Function
     void ToggelFullScreen(void);
 
@@ -137,7 +145,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_PAINT:
-        // Display();
+        GetClientRect(hwnd, &rc);
+        Resize(rc.right, rc.bottom);
         break;
 
     case WM_SETFOCUS:
@@ -271,6 +280,9 @@ void Resize(int width, int height)
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
     gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 
@@ -278,68 +290,92 @@ void Resize(int width, int height)
 
 void Display()
 {
+    GLfloat x_all = 0.0f, y_all = 0.0f;
+    GLfloat s = 0.0f, p = 0.0f, in_r = 0.0f, ab = 0.0f, bc = 0.0f, ca = 0.0f;
+    
 
-    int i;
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    // Colors Must be   RGB C = grean + Blue M = red + Blue Y = red + Gean W  Grey = .5 +.5 +.5 , orenge = 1.0  + 0.5 + 0.0 , your choice 
+    glTranslatef(0.0f, 0.0f, -6.0f);
+
+    glLineWidth(2.0f);
     glBegin(GL_LINES);
 
-    
-    for ( i = 0; i <= 10 ; i++)
-    {
-        switch (i)
-        {
-        case 1:
-            Vertexcall(0.1f, 1.0f, 0.0f, 0.0f);
-            break;
-        case 2:
-            Vertexcall(0.2f, 0.0f, 1.0f, 0.0f);
-            break;
-        case 3:
-            Vertexcall(0.3f, 0.0f, 0.0f, 1.0f);
-            break;
-        case 4:
-            Vertexcall(0.4f, 0.0f, 1.0f, 1.0f);
-            break;
-        case 5:
-            Vertexcall(0.5f, 1.0f, 0.0f, 1.0f);
-            break;
-        case 6:
-            Vertexcall(0.6f, 1.0f, 1.0f, 0.0f);
-            break;
-        case 7:
-            Vertexcall(0.7f, 1.0f, 1.0f, 1.0f);
-            break;
-        case 8:
-            Vertexcall(0.8f, 0.5f, 0.5f, 0.5f);
-            break;
-        case 9:
-            Vertexcall(0.9f, 1.0f, 0.5f, 0.0f);
-            break;
-        case 0:
-            Vertexcall(1.0f, 1.0f, 0.5f, 0.5f);
-            break;
-        default:
-            break;
-        }
+    Vertexcall( 1.0f, 1.0f, 0.0f, 0.0f);
+         
+    glEnd();
 
-
-    }
+    // Single Line  
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -1.0f, 0.0f);
 
     glEnd();
 
+    //calculating the Distance of lines x1,x2,y1,y2
+    //Left side of triangle
+    calculate_Distance(-1.0f, 0.0f, -1.0f, 1.0f, &ab);
+
+    //Right side of triangle
+    calculate_Distance(0.0f, 1.0f, 1.0f, -1.0f, &bc);
+
+    //Bottom side of triangle
+    calculate_Distance(1.0f, -1.0f, -1.0f, -1.0f, &ca);
+
+    //I Fount the Perimter 
+    p = ab + bc + ca;
+
+    //I Fount the Semiperimeter
+    s = p / 2;
+   
+    //by heron's Formula for calculating the area of triangle 
+    T_area = sqrtf(s * (s - ab) * (s - bc) * (s - ca));
+
+    // I Tried to find the radious of circle 
+    in_r = (T_area *2) / p;
+
+    //finding the center of trangle 
+    x_all = ((ab * (-1)) + (ca * (0)) + (ab * 1)) / p;
+    y_all = ((ab * (-1)) + (ca * (1)) + (ab * -1)) / p;
+
+    if (i == 1)
+    {
+        fprintf_s(gpFile_DM, "Triangle's Area = %f\nTriangle Center Co-Ordinates(x,Y) :\t (%f , %f)\n", T_area, x_all, y_all);
+
+        fprintf_s(gpFile_DM, "\nperimeter = %f\nThree sides of Triangle : ab = %f \t bc = %f \t ca = %f\n", p, ab, bc, ca);
+
+        fprintf_s(gpFile_DM, "\nSemi-Perimeter = %f\nInCircle's redios : %f\n", s, in_r);
+        //fprintf_s(gpFile_DM, "\nHeight = %f",T_h);
+
+        i++;
+    }
+    
+   
+    glTranslatef(x_all, y_all, 0.0f);
+    glColor3f(0.0f, 1.0f, 1.0f);
+
+    glBegin(GL_POINTS);
+    for (GLfloat angle = 0.0f; angle <= 2 * PI; angle = angle + 0.0001f)
+    {
+        glVertex3f((GLfloat)cos(angle) * (in_r), (GLfloat)sin(angle) * (in_r), 0.0f);
+    }
+
+    glEnd();
+    
     SwapBuffers(ghdc_DM);
 
 }
 
 void Vertexcall(GLfloat i, GLfloat R, GLfloat G, GLfloat B)
 {
+
     glColor3f(R, G, B);
+
     glVertex3f(0, i, 0.0f);
     glVertex3f(-i, -i, 0.0f);
 
@@ -348,6 +384,13 @@ void Vertexcall(GLfloat i, GLfloat R, GLfloat G, GLfloat B)
 
     glVertex3f(i, -i, 0.0f);
     glVertex3f(0, i, 0.0f);
+
+
+}
+
+void calculate_Distance(GLfloat x1, GLfloat x2, GLfloat y1, GLfloat y2, GLfloat* side)
+{
+    *side = sqrtf((((x2) - (x1)) * (((x2) - (x1)))) + (((y2) - (y1)) * ((y2) - (y1))));
 }
 
 void unInitialize()

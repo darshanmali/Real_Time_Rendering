@@ -2,8 +2,8 @@
 #include"Header.h"
 #include<gl/GL.h>
 #include<stdio.h>
-#include<math.h>
 #include<gl/GLU.h>
+#include<math.h>
 
 #pragma comment(lib,"OpenGL32.lib")
 #pragma comment(lib,"Glu32.lib")
@@ -11,6 +11,7 @@
 #define WIN_WIDTH_DM 800
 #define WIN_HEIGHT_DM 600
 #define PI 3.141592653589793238
+
 
 //Global Fuction 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -25,12 +26,20 @@ bool gbActiveWindows_DM = false;
 HDC ghdc_DM = NULL;
 HGLRC ghrc_DM = NULL;
 FILE* gpFile_DM = NULL;
-
+const int circle_Points = 1000;
+int Color_flag = 0;
+GLfloat T_b = 0.0f, T_h = 0.0f, T_area = 0.0f;
+int i = 1;
+GLfloat increment_Line = 3.0f;
+GLfloat increment_Triangle = 3.5f;
+GLfloat angle = 0.0f;
 
 //Local Function 
 void Resize(int, int);
 void unInitialize(void);
 void Display(void);
+void Vertexcall(GLfloat, GLfloat, GLfloat, GLfloat);
+void calculate_Distance(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat*);
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine, int iCmdShow)
@@ -74,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Cicle With Graph Assignment !"),
+        TEXT("MY consentric Circle Assignment !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -129,6 +138,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+
+    RECT rc;
+
     //Function
     void ToggelFullScreen(void);
 
@@ -136,7 +148,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_PAINT:
-        // Display();
+        GetClientRect(hwnd, &rc);
+        Resize(rc.right, rc.bottom);
         break;
 
     case WM_SETFOCUS:
@@ -270,6 +283,9 @@ void Resize(int width, int height)
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
     gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
 
@@ -278,85 +294,156 @@ void Resize(int width, int height)
 void Display()
 {
 
-    static GLfloat i, j;
+    void updatevoid();
+
+    
+    GLfloat x_all = 0.0f, y_all = 0.0f;
+    GLfloat s = 0.0f, p = 0.0f, in_r = 0.0f, ab = 0.0f, bc = 0.0f, ca = 0.0f;
+
+
     //code
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    glTranslatef(-increment_Triangle, -increment_Triangle, -6.0f);
+
+    if (increment_Triangle >= 0.0f)
+    {
+        increment_Triangle = increment_Triangle - 0.001f;
+        glRotatef(angle, 0.0f, 1.0f, 0.0f);
+    }
+    
+
+    glLineWidth(2.0f);
     glBegin(GL_LINES);
 
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(1.0f, 0.0f, 0.0f);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-1.0f, 0.0f, 0.0f);
-
-    for (i = 0.05f; i <= 1.0f; i = i + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(1.0f, i, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-1.0f, i, 0.0f);
-    }
-
-    for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(1.0f, -j, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-1.0f, -j, 0.0f);
-    }
+    Vertexcall(1.0f, 1.0f, 0.0f, 0.0f);
 
     glEnd();
 
-    glBegin(GL_LINES);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
+    glTranslatef(0.0f, increment_Line, -6.0f);
+
+    if (increment_Line >= 0.0f)
+    {
+        
+        if (increment_Line >= 1.0)
+        {
+            increment_Line = increment_Line - 0.001f;
+        }
+        else
+        {
+            increment_Line = increment_Line - 0.0007f;
+        }
+    }
+        
+    
+    // Single Line  
+    glBegin(GL_LINES);
     glColor3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f, 1.0f, 0.0f);
-
-    glColor3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f, -1.0f, 0.0f);
 
-    for (i = 0.05f; i <= 1.0f; i = i + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-i, 1.0f, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-i, -1.0f, 0.0f);
-    }
-
-    for (j = 0.05f; j <= 1.0f; j = j + 0.05f)
-    {
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(j, 1.0f, 0.0f);
-
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(j, -1.0f, 0.0f);
-    }
-
     glEnd();
+    
+    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
+    glTranslatef(0.0f, 0.0f, -6.0f);
+    //calculating the Distance of lines x1,x2,y1,y2
+    //Left side of triangle
+    calculate_Distance(-1.0f, 0.0f, -1.0f, 1.0f, &ab);
+
+    //Right side of triangle
+    calculate_Distance(0.0f, 1.0f, 1.0f, -1.0f, &bc);
+
+    //Bottom side of triangle
+    calculate_Distance(1.0f, -1.0f, -1.0f, -1.0f, &ca);
+
+    //I Fount the Perimter 
+    p = ab + bc + ca;
+
+    //I Fount the Semiperimeter
+    s = p / 2;
+
+    //by heron's Formula for calculating the area of triangle 
+    T_area = sqrtf(s * (s - ab) * (s - bc) * (s - ca));
+
+    // I Tried to find the radious of circle 
+    in_r = (T_area * 2) / p;
+
+    //finding the center of trangle 
+    x_all = ((ab * (-1)) + (ca * (0)) + (ab * 1)) / p;
+    y_all = ((ab * (-1)) + (ca * (1)) + (ab * -1)) / p;
+
+    if (i == 1)
+    {
+        fprintf_s(gpFile_DM, "Triangle's Area = %f\nTriangle Center Co-Ordinates(x,Y) :\t (%f , %f)\n", T_area, x_all, y_all);
+
+        fprintf_s(gpFile_DM, "\nperimeter = %f\nThree sides of Triangle : ab = %f \t bc = %f \t ca = %f\n", p, ab, bc, ca);
+
+        fprintf_s(gpFile_DM, "\nSemi-Perimeter = %f\nInCircle's redios : %f\n", s, in_r);
+        //fprintf_s(gpFile_DM, "\nHeight = %f",T_h);
+
+        i++;
+    }
+
+
+    glTranslatef(x_all, y_all, 0.0f);
+    glColor3f(0.0f, 1.0f, 1.0f);
 
     glBegin(GL_POINTS);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
     for (GLfloat angle = 0.0f; angle <= 2 * PI; angle = angle + 0.0001f)
     {
-        glVertex3f((GLfloat)cos(angle), (GLfloat)sin(angle), 0.0f);
-
+        glVertex3f((GLfloat)cos(angle) * (in_r), (GLfloat)sin(angle) * (in_r), 0.0f);
     }
 
     glEnd();
+    
+    
+    updatevoid();
 
     SwapBuffers(ghdc_DM);
 
 }
 
+void updatevoid()
+{
+    angle = angle + 0.1f;
+    if (angle == 360.0f)
+    {
+        angle = 0.1f;
+    }
+}
+
+
+
+void Vertexcall(GLfloat i, GLfloat R, GLfloat G, GLfloat B)
+{
+
+    glColor3f(R, G, B);
+
+    glVertex3f(0, i, 0.0f);
+    glVertex3f(-i, -i, 0.0f);
+
+    glVertex3f(-i, -i, 0.0f);
+    glVertex3f(i, -i, 0.0f);
+
+    glVertex3f(i, -i, 0.0f);
+    glVertex3f(0, i, 0.0f);
+
+
+}
+
+void calculate_Distance(GLfloat x1, GLfloat x2, GLfloat y1, GLfloat y2, GLfloat* side)
+{
+    *side = sqrtf((((x2)-(x1)) * (((x2)-(x1)))) + (((y2)-(y1)) * ((y2)-(y1))));
+}
 
 void unInitialize()
 {
