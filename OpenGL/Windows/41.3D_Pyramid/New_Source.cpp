@@ -31,8 +31,6 @@ static GLfloat x = 0.0;
 void Resize(int, int);
 void unInitialize(void);
 void Display(void);
-void updatevoid();
-
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine, int iCmdShow)
@@ -76,7 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Spinning Cube And Pyramid !"),
+        TEXT("MY Pyramid !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -232,7 +230,7 @@ void Initialize()
     pfd_DM.cGreenBits = 8;
     pfd_DM.cBlueBits = 8;
     pfd_DM.cAlphaBits = 8;
-    
+
 
     iPixelFormatIndex_DM = ChoosePixelFormat(ghdc_DM, &pfd_DM);
 
@@ -263,7 +261,7 @@ void Initialize()
 
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    
+
     //Functions for Depth
 
     //for getting anti_Allies
@@ -271,11 +269,11 @@ void Initialize()
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);//Preventing From Perspective Destortion
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);//Preventing From Perspective Destortion
 
 
 
-    //Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
+    Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 void Resize(int width, int height)
 {
@@ -285,7 +283,7 @@ void Resize(int width, int height)
     }
 
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-   
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -298,19 +296,18 @@ void Display()
 {
 
     static GLfloat i, j;
+
     //code
     // for Depth    Add GL_DEPTH_BUFFER_BIT
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glTranslatef(-0.5f, 0.0f, 0.0f);
-    glRotatef(angle, 0.0f, 1.0f, 0.0f);
+    glTranslatef(0.0f, 0.0f, -3.0f);
 
-    glScalef(0.5f,0.5f,0.5f);
+    glScalef(0.7f, 0.7f, 0.7f);
     glBegin(GL_TRIANGLES);
-    
+
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex3f(0.0f, 0.5f, 0.0f);
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -338,75 +335,12 @@ void Display()
     glVertex3f(-0.5f, -0.5f, 0.5f);
     glColor3f(0.0f, 0.0f, 1.0f);
     glVertex3f(-0.5f, -0.5f, -0.5f);
-
-
 
     glEnd();
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glTranslatef(0.5f, 0.0f, 0.0f);
-    glRotatef(angle, 1.0f, 1.0f, 1.0f);
-
-    glScalef(0.5f, 0.5f, 0.5f);
-
-    glBegin(GL_QUADS);
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(0.5f, 0.5f, 0.5f);
-    glVertex3f(-0.5f, 0.5f, 0.5f);
-    glVertex3f(-0.5f, -0.5f, 0.5f);
-    glVertex3f(0.5f, -0.5f, 0.5f);
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, 0.5f, -0.5f);
-    glVertex3f(0.5f, 0.5f, 0.5f);
-    glVertex3f(0.5f, -0.5f, 0.5f);
-    glVertex3f(0.5f, -0.5f, -0.5f);
-
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.5f, 0.5f, -0.5f);
-    glVertex3f(-0.5f, 0.5f, -0.5f);
-    glVertex3f(-0.5f, -0.5f, -0.5f);
-    glVertex3f(0.5f, -0.5f, -0.5f);
-
-    glColor3f(0.0f, 1.0f, 1.0f);
-    glVertex3f(-0.5f, 0.5f, -0.5f);
-    glVertex3f(-0.5f, 0.5f, 0.5f);
-    glVertex3f(-0.5f, -0.5f, 0.5f);
-    glVertex3f(-0.5f, -0.5f, -0.5f);
-
-    glColor3f(1.0f, 0.0f, 1.0f);
-    glVertex3f(0.5f, 0.5f, 0.5f);
-    glVertex3f(-0.5f, 0.5f, 0.5f);
-    glVertex3f(-0.5f, 0.5f, -0.5f);
-    glVertex3f(0.5f, 0.5f, -0.5f);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(0.5f, -0.5f, 0.5f);
-    glVertex3f(-0.5f, -0.5f, 0.5f);
-    glVertex3f(-0.5f, -0.5f, -0.5f);
-    glVertex3f(0.5f, -0.5f, -0.5f);
-
-    glEnd();
-
-    updatevoid();
 
     SwapBuffers(ghdc_DM);
 
 }
-void updatevoid()
-{
-    angle = angle + 0.1f;
-    if (angle == 360.0f)
-    {
-        angle = 0.1f;
-    }
-
-}
-
-
 
 void unInitialize()
 {
