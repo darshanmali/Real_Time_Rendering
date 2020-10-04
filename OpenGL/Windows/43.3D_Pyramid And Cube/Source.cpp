@@ -74,7 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Pyramid !"),
+        TEXT("MY Cube And Pyramid !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -85,7 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
         hInstance,
         NULL);
 
-    ghwnd_DM = hwnd;
+    ghwnd_DM = hwnd;    
 
 
     ShowWindow(hwnd, iCmdShow);
@@ -271,8 +271,6 @@ void Initialize()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);//Preventing From Perspective Destortion
 
-
-
     Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 void Resize(int width, int height)
@@ -296,16 +294,64 @@ void Display()
 {
 
     static GLfloat i, j;
-
     //code
     // for Depth    Add GL_DEPTH_BUFFER_BIT
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glTranslatef(0.0f, 0.0f, -3.0f);
+    glTranslatef(1.0f, 0.0f, -5.0f);
 
-    glScalef(0.7f, 0.7f, 0.7f);
+    glRotatef(angle, 1.0f, 1.0f, 1.0f);
+
+    glBegin(GL_QUADS);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.5f, 0.5f, 0.5f);
+    glVertex3f(-0.5f, 0.5f, 0.5f);
+    glVertex3f(-0.5f, -0.5f, 0.5f);
+    glVertex3f(0.5f, -0.5f, 0.5f);
+
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.5f, 0.5f, -0.5f);
+    glVertex3f(0.5f, 0.5f, 0.5f);
+    glVertex3f(0.5f, -0.5f, 0.5f);
+    glVertex3f(0.5f, -0.5f, -0.5f);
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(0.5f, 0.5f, -0.5f);
+    glVertex3f(-0.5f, 0.5f, -0.5f);
+    glVertex3f(-0.5f, -0.5f, -0.5f);
+    glVertex3f(0.5f, -0.5f, -0.5f);
+
+    glColor3f(1.0f, 0.0f, 1.0f);
+    glVertex3f(-0.5f, 0.5f, -0.5f);
+    glVertex3f(-0.5f, 0.5f, 0.5f);
+    glVertex3f(-0.5f, -0.5f, 0.5f);
+    glVertex3f(-0.5f, -0.5f, -0.5f);
+
+    glColor3f(0.0f, 1.0f, 1.0f);
+    glVertex3f(0.5f, 0.5f, 0.5f);
+    glVertex3f(-0.5f, 0.5f, 0.5f);
+    glVertex3f(-0.5f, 0.5f, -0.5f);
+    glVertex3f(0.5f, 0.5f, -0.5f);
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(0.5f, -0.5f, 0.5f);
+    glVertex3f(-0.5f, -0.5f, 0.5f);
+    glVertex3f(-0.5f, -0.5f, -0.5f);
+    glVertex3f(0.5f, -0.5f, -0.5f);
+
+    glEnd();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glTranslatef(-1.0f, 0.0f, -5.0f);
+
+    glRotatef(angle, 0.0f, 1.0f, 0.0f);
+
     glBegin(GL_TRIANGLES);
 
     glColor3f(1.0f, 0.0f, 0.0f);
@@ -337,9 +383,14 @@ void Display()
     glVertex3f(-0.5f, -0.5f, -0.5f);
 
     glEnd();
+    
+    angle = angle + 0.1f;
+    if (angle >= 360.0f)
+    {
+        angle = 0.0f;
+    }
 
     SwapBuffers(ghdc_DM);
-
 }
 
 void unInitialize()
