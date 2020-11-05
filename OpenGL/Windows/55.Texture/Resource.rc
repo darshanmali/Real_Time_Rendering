@@ -1,0 +1,7 @@
+#include<Header.h>
+
+MYICON ICON DM.ico
+
+STONE_BITMAP BITMAP Stone.bmp
+
+KUNDALI_BITMAP BITMAP Vijay_Kundali.bmp
