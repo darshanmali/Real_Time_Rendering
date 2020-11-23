@@ -27,10 +27,11 @@ GLfloat angle = 0.0f;
 static GLfloat x = 0.0;
 
 //New                                               Changes for ImageLoading OS Part
-GLuint Stone_Texture;
-GLuint Kundali_Texture;
+GLuint Smile_Texture;
 HBITMAP hBitmap;
 BITMAP bmp;
+
+GLuint Presed_Digit = 0;
 
 //Local Function 
 void Resize(int, int);
@@ -156,12 +157,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         case VK_ESCAPE:
             DestroyWindow(hwnd);
             break;
+        case 0x49:// Digit 1
+            Presed_Digit = 1;
+            glEnable(GL_TEXTURE_2D);
+            break;
+        case 0x50:// Digit 2
+            Presed_Digit = 2;
+            glEnable(GL_TEXTURE_2D);
+            break;
+        case 0x51:// Digit 3
+            Presed_Digit = 3;
+            glEnable(GL_TEXTURE_2D);
+            break;
+        case 0x52:// Digit 4
+            Presed_Digit = 4;
+            glEnable(GL_TEXTURE_2D);
+            break;
 
         case 0x46:
         case 0x66:
             ToggelFullScreen();
             break;
         default:
+            glDisable(GL_TEXTURE_2D);
             break;
         }
         break;
@@ -278,11 +296,8 @@ void Initialize()
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);//Preventing From Perspective Destortion
     //                                                                                                  New 
-    glEnable(GL_TEXTURE_2D);
-    LoadGLTexture(&Stone_Texture, MAKEINTRESOURCE(STONE_BITMAP));
-
-    LoadGLTexture(&Kundali_Texture, MAKEINTRESOURCE(KUNDALI_BITMAP));
-
+    LoadGLTexture(&Smile_Texture, MAKEINTRESOURCE(MYSMILEY));
+                                  
     Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 
@@ -319,8 +334,8 @@ bool LoadGLTexture(GLuint* Texture, TCHAR Resource_ID[])
         glBindTexture(GL_TEXTURE_2D, *Texture);
         //Setting Texture Param
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, bmp.bmWidth, bmp.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE,bmp.bmBits);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);       
+        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, bmp.bmWidth, bmp.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, bmp.bmBits);
         DeleteObject(hBitmap);
     }
     return (bResult);
@@ -329,138 +344,99 @@ bool LoadGLTexture(GLuint* Texture, TCHAR Resource_ID[])
 void Display()
 {
 
-    static GLfloat i, j;
-    //code
-    // for Depth    Add GL_DEPTH_BUFFER_BIT
-
-    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //.........................................................Triangle
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glTranslatef(-1.5f, 0.0f, -7.0f);
-
-    glRotatef(angle, 0.0f, 1.0f, 0.0f);
-
-    glBindTexture(GL_TEXTURE_2D, Stone_Texture);
-
-    glBegin(GL_TRIANGLES);
-
-    //FRONT FACE
-    glTexCoord2f(0.5f, 1.0f);
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-
-    //RIGHT FACE
-    glTexCoord2f(0.5f, 1.0f);
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-
-    //BACK FACE
-    glTexCoord2f(0.5f, 1.0f);
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-
-    //LEFT FACE
-    glTexCoord2f(0.5f, 1.0f);
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-
-    glEnd();
 
     //.........................................................Cube
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glTranslatef(1.5f, 0.0f, -7.0f);
-
-    glRotatef(angle, 1.0f, 1.0f, 1.0f);
-
-    glBindTexture(GL_TEXTURE_2D, Kundali_Texture);
-
-    glBegin(GL_QUADS);
-
-    //FRONT FACE
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-
-    //RIGHT FACE
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-
-    //BACK FACE
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-
-    //LEFT FACE
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-
-    //TOP FACE
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-
-    //BOTTOM FACE
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-
-    glEnd();
-    angle = angle + 0.1f;
-    if (angle >= 360.0f)
+    if (Presed_Digit == 1)
     {
-        angle = 0.0f;
-    }
+        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
 
+        glBegin(GL_QUADS);
+        glColor3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(1.0f, 1.0f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex3f(-1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3f(1.0f, -1.0f, 0.0f);
+
+        glEnd();
+    }
+    else if (Presed_Digit == 2)
+    {
+        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
+
+        glBegin(GL_QUADS);
+        glColor3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.5f, 0.5f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.0f, 0.5f);
+        glVertex3f(-1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+
+        glTexCoord2f(0.5f, 0.0f);
+        glVertex3f(1.0f, -1.0f, 0.0f);
+
+        glEnd();
+    
+    }
+    else if (Presed_Digit == 3)
+    {
+        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
+
+        glBegin(GL_QUADS);
+        glColor3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(2.0f, 2.0f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.0f, 2.0f);
+        glVertex3f(-1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+
+        glTexCoord2f(2.0f, 0.0f);
+        glVertex3f(1.0f, -1.0f, 0.0f);
+
+        glEnd();
+
+    }
+    else if (Presed_Digit == 4)
+    {
+        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
+
+        glBegin(GL_QUADS);
+        glColor3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.5f, 0.5f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.5f, 0.5f);
+        glVertex3f(-1.0f, 1.0f, 0.0f);
+
+        glTexCoord2f(0.5f, 0.5f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+
+        glTexCoord2f(0.5f, 0.5f);
+        glVertex3f(1.0f, -1.0f, 0.0f);
+
+        glEnd();
+
+    }
     SwapBuffers(ghdc_DM);
 
 }
@@ -487,8 +463,7 @@ void unInitialize()
         wglDeleteContext(ghrc_DM);
         ghrc_DM = NULL;
     }
-    glDeleteTextures(1, &Stone_Texture);
-    glDeleteTextures(1, &Kundali_Texture);
+    glDeleteTextures(1, &Smile_Texture);
     if (ghdc_DM)
     {
         ReleaseDC(ghwnd_DM, ghdc_DM);
@@ -503,3 +478,5 @@ void unInitialize()
     }
 
 }
+
+
