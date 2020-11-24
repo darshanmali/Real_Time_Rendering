@@ -10,6 +10,14 @@
 #define WIN_WIDTH_DM 800
 #define WIN_HEIGHT_DM 600
 
+//                                                  NEW
+#define CHECK_IMAGE_WIDTH 64
+#define CHECK_IMAGE_HIGHT 64
+
+GLubyte Check_Image[CHECK_IMAGE_HIGHT][CHECK_IMAGE_WIDTH][4];
+GLuint Text_Image;
+
+
 //Global Fuction 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -23,15 +31,6 @@ bool gbActiveWindows_DM = false;
 HDC ghdc_DM = NULL;
 HGLRC ghrc_DM = NULL;
 FILE* gpFile_DM = NULL;
-GLfloat angle = 0.0f;
-static GLfloat x = 0.0;
-
-//New                                               Changes for ImageLoading OS Part
-GLuint Smile_Texture;
-HBITMAP hBitmap;
-BITMAP bmp;
-
-GLuint Presed_Digit = 0;
 
 //Local Function 
 void Resize(int, int);
@@ -80,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Cube !"),
+        TEXT("My CheckerBoard !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -141,10 +140,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     switch (iMsg)
     {
-    case WM_PAINT:
-        // Display();
-        break;
-
     case WM_SETFOCUS:
         gbActiveWindows_DM = true;
         break;
@@ -157,23 +152,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         case VK_ESCAPE:
             DestroyWindow(hwnd);
             break;
-        case 'A':// Digit 1
-            Presed_Digit = 1;
-            glEnable(GL_TEXTURE_2D);
-            break;
-        case 'B':// Digit 2
-            Presed_Digit = 2;
-            glEnable(GL_TEXTURE_2D);
-            break;
-        case 'C':// Digit 3
-            Presed_Digit = 3;
-            glEnable(GL_TEXTURE_2D);
-            break;
-        case 'D':// Digit 4
-            Presed_Digit = 4;
-            glEnable(GL_TEXTURE_2D);
-            break;
-
         case 0x46:
         case 0x66:
             ToggelFullScreen();
@@ -237,7 +215,7 @@ void Initialize()
     PIXELFORMATDESCRIPTOR pfd_DM;
     int iPixelFormatIndex_DM;
     //                                                                                                                      1 Change                       
-    bool LoadGLTexture(GLuint*, TCHAR[]);
+    void LoadGLTexture(void);
 
 
     ghdc_DM = GetDC(ghwnd_DM);
@@ -294,10 +272,11 @@ void Initialize()
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);//Preventing From Perspective Destortion
-    //                                                                                                  New 
-    LoadGLTexture(&Smile_Texture, MAKEINTRESOURCE(MYSMILEY));
-                                  
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    glEnable(GL_TEXTURE_2D);
+    LoadGLTexture();
+
     Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
 
@@ -313,32 +292,54 @@ void Resize(int width, int height)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPerspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+    gluPerspective(60.0f, (GLfloat)width / (GLfloat)height, 0.0f, 30.0f);
+}
 
+void LoadGLTexture()
+{
+    //LOCAL VARIABLE
+    bool bResult = false;
+
+    //Local Function
+    void MakeCheckImage(void);
+
+    //From here We are Starting the Texturing Code
+        
+    MakeCheckImage();
+
+    glGenTextures(1, &Text_Image);
+
+    glBindTexture(GL_TEXTURE_2D, Text_Image);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    //Setting Texture Param
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECK_IMAGE_WIDTH, CHECK_IMAGE_HIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, Check_Image);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 }
 
-bool LoadGLTexture(GLuint* Texture, TCHAR Resource_ID[])
+void MakeCheckImage(void)
 {
-    bool bResult = false;
-
-    hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL), Resource_ID, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-    if (hBitmap != NULL)
+    int i, j, c;
+    for (i = 0; i < CHECK_IMAGE_HIGHT; i++)
     {
-        bResult = true;
-        GetObject(hBitmap, sizeof(BITMAP), &bmp);
-
-        //From here We are Starting the Texturing Code
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-        glGenTextures(1, Texture);
-        glBindTexture(GL_TEXTURE_2D, *Texture);
-        //Setting Texture Param
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);       
-        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, bmp.bmWidth, bmp.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, bmp.bmBits);
-        DeleteObject(hBitmap);
+        for (j = 0; j < CHECK_IMAGE_WIDTH; j++)
+        {
+            c = (((i & 0x8) == 0) ^ ((j & 0x8) == 0)) * 255;
+            
+            Check_Image[i][j][0] = (GLubyte)c;
+            Check_Image[i][j][1] = (GLubyte)c;
+            Check_Image[i][j][2] = (GLubyte)c;
+            Check_Image[i][j][3] = (GLubyte)c;
+        }
     }
-    return (bResult);
 }
 
 void Display()
@@ -349,94 +350,42 @@ void Display()
     //.........................................................Cube
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -3.0f);
-    if (Presed_Digit == 1)
-    {
-        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
-
-        glBegin(GL_QUADS);
-        glColor3f(1.0f, 1.0f, 0.0f);
-
-        glTexCoord2f(1.0f, 1.0f);
-        glVertex3f(1.0f, 1.0f, 0.0f);
-
-        glTexCoord2f(0.0f, 1.0f);
-        glVertex3f(-1.0f, 1.0f, 0.0f);
-
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex3f(-1.0f, -1.0f, 0.0f);
-
-        glTexCoord2f(1.0f, 0.0f);
-        glVertex3f(1.0f, -1.0f, 0.0f);
-
-        glEnd();
-    }
-    else if (Presed_Digit == 2)
-    {
-        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
-
-        glBegin(GL_QUADS);
-        //glColor3f(1.0f, 1.0f, 0.0f);
-
-        glTexCoord2f(0.5f, 0.5f);
-        glVertex3f(1.0f, 1.0f, 0.0f);
-
-        glTexCoord2f(0.0f, 0.5f);
-        glVertex3f(-1.0f, 1.0f, 0.0f);
-
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex3f(-1.0f, -1.0f, 0.0f);
-
-        glTexCoord2f(0.5f, 0.0f);
-        glVertex3f(1.0f, -1.0f, 0.0f);
-
-        glEnd();
+    glTranslatef(0.0f, 0.0f, -3.6f);
     
-    }
-    else if (Presed_Digit == 3)
-    {
-        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
+    glBindTexture(GL_TEXTURE_2D, Text_Image);
 
-        glBegin(GL_QUADS);
-        glColor3f(1.0f, 1.0f, 0.0f);
+    glBegin(GL_QUADS);
+    
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(0.0f, 1.0f, 0.0f);
 
-        glTexCoord2f(2.0f, 2.0f);
-        glVertex3f(1.0f, 1.0f, 0.0f);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(-2.0f, 1.0f, 0.0f);
 
-        glTexCoord2f(0.0f, 2.0f);
-        glVertex3f(-1.0f, 1.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(-2.0f, -1.0f, 0.0f);
 
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex3f(-1.0f, -1.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(0.0f, -1.0f, 0.0f);
 
-        glTexCoord2f(2.0f, 0.0f);
-        glVertex3f(1.0f, -1.0f, 0.0f);
+    glEnd();
+    
+    glBegin(GL_QUADS);
 
-        glEnd();
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(2.41421f, 1.0f, -1.41421f);
 
-    }
-    else if (Presed_Digit == 4)
-    {
-        glBindTexture(GL_TEXTURE_2D, Smile_Texture);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
 
-        glBegin(GL_QUADS);
-        glColor3f(1.0f, 1.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
 
-        glTexCoord2f(0.5f, 0.5f);
-        glVertex3f(1.0f, 1.0f, 0.0f);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(2.41421f, -1.0f, -1.41421f);
 
-        glTexCoord2f(0.5f, 0.5f);
-        glVertex3f(-1.0f, 1.0f, 0.0f);
+    glEnd();
 
-        glTexCoord2f(0.5f, 0.5f);
-        glVertex3f(-1.0f, -1.0f, 0.0f);
-
-        glTexCoord2f(0.5f, 0.5f);
-        glVertex3f(1.0f, -1.0f, 0.0f);
-
-        glEnd();
-
-    }
     SwapBuffers(ghdc_DM);
 
 }
@@ -463,7 +412,6 @@ void unInitialize()
         wglDeleteContext(ghrc_DM);
         ghrc_DM = NULL;
     }
-    glDeleteTextures(1, &Smile_Texture);
     if (ghdc_DM)
     {
         ReleaseDC(ghwnd_DM, ghdc_DM);
