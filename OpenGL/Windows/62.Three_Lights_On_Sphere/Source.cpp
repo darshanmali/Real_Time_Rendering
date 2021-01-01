@@ -1,9 +1,8 @@
 #include<windows.h>
 #include"Header.h"
-#include"OGL.h"
 #include<gl/GL.h>
-#include<gl/GLU.h>
 #include<stdio.h>
+#include<gl/GLU.h>
 
 #pragma comment(lib,"OpenGL32.lib")
 #pragma comment(lib,"Glu32.lib")
@@ -27,23 +26,39 @@ FILE* gpFile_DM = NULL;
 GLfloat angle = 0.0f;
 static GLfloat x = 0.0;
 
-GLuint TeaPot_Texture;
-HBITMAP hBitmap;
-BITMAP bmp;
-
 //                                      New For Light
 bool gbLight = false;
 
-//                                                                      Black and White
-GLfloat lights_Ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-GLfloat lights_Defues[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-GLfloat lights_Position[] = { 100.0f, 100.0f, 100.0f, 1.0f };
-GLfloat lights_Specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+
+
+GLfloat light_Ambient_Zero[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+GLfloat light_Defues_Zero[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+GLfloat light_Specular_Zero[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+GLfloat light_Position_Zero[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+
+GLfloat light_Ambient_One[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+GLfloat light_Defues_One[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+GLfloat light_Specular_One[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+GLfloat light_Position_One[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+GLfloat light_Ambient_Two[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+GLfloat light_Defues_Two[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+GLfloat light_Specular_Two[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+GLfloat light_Position_Two[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 GLfloat material_Ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 GLfloat material_Diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 GLfloat material_Specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+GLfloat Light_Angle_0 = 0.0f;
+GLfloat Light_Angle_1 = 0.0f;
+GLfloat Light_Angle_2 = 0.0f;
+
 GLfloat material_Shininess = 128.0f;
+
+GLUquadric* quadric = NULL;
 
 //Local Function 
 void Resize(int, int);
@@ -92,7 +107,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("MY Cube !"),
+        TEXT("MY Lights !"),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -153,9 +168,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
     switch (iMsg)
     {
-    case WM_PAINT:
-        // Display();
-        break;
 
     case WM_SETFOCUS:
         gbActiveWindows_DM = true;
@@ -169,6 +181,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         case VK_ESCAPE:
             DestroyWindow(hwnd);
             break;
+            //                                                      New For Light
         case 'L':
             if (gbLight == false)
             {
@@ -243,10 +256,6 @@ void Initialize()
 {
     PIXELFORMATDESCRIPTOR pfd_DM;
     int iPixelFormatIndex_DM;
-    
-    //                                                                                                                      1 Change                       
-    bool LoadGLTexture(GLuint*, TCHAR[]);
-
 
     ghdc_DM = GetDC(ghwnd_DM);
 
@@ -303,23 +312,33 @@ void Initialize()
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);//Preventing From Perspective Destortion
-    //                                                                                                  New 
-    glEnable(GL_TEXTURE_2D);
-    LoadGLTexture(&TeaPot_Texture, MAKEINTRESOURCE(STONE_BITMAP));
-    glBindTexture(GL_TEXTURE_2D, TeaPot_Texture);
 
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lights_Ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lights_Defues);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lights_Specular);
-    glLightfv(GL_LIGHT0, GL_POSITION, lights_Position);
+    //                                                              New For Light
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_Ambient_Zero);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_Defues_Zero);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_Specular_Zero);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_Position_Zero);
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_Ambient_One);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_Defues_One);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_Specular_One);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_Position_One);
+    
+    glLightfv(GL_LIGHT2, GL_AMBIENT, light_Ambient_Two);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, light_Defues_Two);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, light_Specular_Two);
+    glLightfv(GL_LIGHT2, GL_POSITION, light_Position_Two);
+
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, material_Ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, material_Diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, material_Specular);
-
     glMaterialf(GL_FRONT, GL_SHININESS, material_Shininess);;
 
     glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1); 
+    glEnable(GL_LIGHT2);
 
     Resize(WIN_WIDTH_DM, WIN_HEIGHT_DM);
 }
@@ -341,75 +360,80 @@ void Resize(int width, int height)
 
 }
 
-bool LoadGLTexture(GLuint* Texture, TCHAR Resource_ID[])
-{
-    bool bResult = false;
-
-    hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL), Resource_ID, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-    if (hBitmap != NULL)
-    {
-        bResult = true;
-        GetObject(hBitmap, sizeof(BITMAP), &bmp);
-
-        //From here We are Starting the Texturing Code
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-        glGenTextures(1, Texture);
-        glBindTexture(GL_TEXTURE_2D, *Texture);
-        //Setting Texture Param
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        gluBuild2DMipmaps(GL_TEXTURE_2D, 3, bmp.bmWidth, bmp.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, bmp.bmBits);
-        DeleteObject(hBitmap);
-    }
-    return (bResult);
-}
-
 void Display()
 {
+    void Update(void);
 
-    //code
+    // for Depth Add GL_DEPTH_BUFFER_BIT 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    glPushMatrix();
+    gluLookAt(0.0f, 0.0f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    
+    glPushMatrix();
+
+    glRotatef(Light_Angle_0, 1.0f, 0.0f, 0.0f);
+    light_Position_Zero[1] = Light_Angle_0;
+    glLightfv(GL_LIGHT0, GL_POSITION, light_Position_Zero);
+
+    glPopMatrix();
+
+
+    glPushMatrix();
+    
+    glRotatef(Light_Angle_1, 0.0f, 1.0f, 0.0f);
+    light_Position_One[0] = Light_Angle_1;
+    glLightfv(GL_LIGHT1, GL_POSITION, light_Position_One);
+    
+    glPopMatrix();
+
+    glPushMatrix();
+
+    glRotatef(Light_Angle_2, 0.0f, 0.0f, 1.0f);
+    light_Position_Two[0] = Light_Angle_2;
+    glLightfv(GL_LIGHT2, GL_POSITION, light_Position_Two);
+
+    glPopMatrix();
+    
     glTranslatef(0.0f, 0.0f, -1.0f);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    glRotatef(angle, 0.0f, 1.0f, 0.0f);
+    quadric = gluNewQuadric();
+    gluSphere(quadric, 0.2f, 60, 60);
 
-    
+    glPopMatrix();
 
-    glBegin(GL_TRIANGLES);
-    
-    for (int i = 0; i < sizeof(face_indicies) / sizeof(face_indicies[0]); i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            int vi = face_indicies[i][j];
-            int ni = face_indicies[i][j + 3];
-            int ti = face_indicies[i][j + 6];
-
-            glNormal3f(normals[ni][0], normals[ni][1], normals[ni][2]);
-
-            glTexCoord2f(textures[ti][0], textures[ti][1]);
-
-            glVertex3f(vertices[vi][0], vertices[vi][1], vertices[vi][2]);
-
-        }
-    }
-
-    glEnd();
-
-    angle = angle + 0.1f;
-    if (angle >= 360.0f)
-    {
-        angle = 0.0f;
-    }
+    Update();
 
     SwapBuffers(ghdc_DM);
 
 }
 
+
+void Update()
+{
+
+    Light_Angle_0 += 0.2f;
+    if (Light_Angle_0 >= 360.0f)
+    {
+        Light_Angle_0 = 0;
+    }
+
+    Light_Angle_1 += 0.2f;
+    if (Light_Angle_1 >= 360.0f)
+    {
+        Light_Angle_1 = 0;
+    }
+
+    Light_Angle_2 += 0.2f;
+    if (Light_Angle_2 >= 360.0f)
+    {
+        Light_Angle_2 = 0;
+    }
+}
 void unInitialize()
 {
     //code
@@ -432,13 +456,18 @@ void unInitialize()
         wglDeleteContext(ghrc_DM);
         ghrc_DM = NULL;
     }
-    glDeleteTextures(1, &TeaPot_Texture);
+
     if (ghdc_DM)
     {
         ReleaseDC(ghwnd_DM, ghdc_DM);
         ghdc_DM = NULL;
     }
 
+    if (quadric)
+    {
+        gluDeleteQuadric(quadric);
+        quadric = NULL;
+    }
 
     if (gpFile_DM)
     {
@@ -447,3 +476,5 @@ void unInitialize()
     }
 
 }
+
+
