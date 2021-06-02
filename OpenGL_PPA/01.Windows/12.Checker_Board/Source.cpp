@@ -38,7 +38,15 @@ HGLRC ghrc_DM = NULL;
 GLfloat T_angle = 0.0f;
 GLfloat R_angle = 0.0f;
 
+//                                                  NEW
+#define CHECK_IMAGE_WIDTH 64
+#define CHECK_IMAGE_HIGHT 64
 
+GLubyte Check_Image[CHECK_IMAGE_HIGHT][CHECK_IMAGE_WIDTH][4];
+GLuint My_Texture;
+
+HBITMAP hBitmap;
+BITMAP bmp;
 
 DWORD dwStyle_D;
 WINDOWPLACEMENT wpPrev_DM = { sizeof(WINDOWPLACEMENT) };
@@ -57,17 +65,13 @@ void Resize(int, int);
 void unInitialize(void);
 void Display(void);
 
-GLuint gVao_Triangle;
-GLuint gVbo_Triangle_Position;
-GLuint gVbo_Triangle_Color;
+GLuint gVao_Cube;
+GLuint gVbo_Cube_Position;
+GLuint gVbo_Cube_Texture;
 
-GLuint gVao_Square;
-GLuint gVbo_Square_Position;
-GLuint gVbo_Square_Color;
-
+GLuint texture_Sampler_Uniform;
 
 GLuint gMVPMatrixUniform;
-
 
 mat4 gPerspectiveProjectMatix;
 
@@ -118,7 +122,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 
     hwnd = CreateWindowEx(WS_EX_APPWINDOW,
         Appname,
-        TEXT("Darshan's OpenGLPP : Two 2D Shapes Rotation "),
+        TEXT("Darshan's OpenGLPP : Checker Board Texturing."),
         WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
         (x / 2) - (Width / 2),
         (y / 2) - (Height / 2),
@@ -256,13 +260,15 @@ void ToggelFullScreen()
         ShowCursor(TRUE);
         gdFullScreen_DM = false;
     }
-
 }
 
 void Initialize()
 {
     PIXELFORMATDESCRIPTOR pfd_DM;
     int iPixelFormatIndex_DM;
+
+    bool LoadGLTexture(GLuint*);
+
 
     ghdc_DM = GetDC(ghwnd_DM);
 
@@ -273,6 +279,8 @@ void Initialize()
     pfd_DM.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
     pfd_DM.iPixelType = PFD_TYPE_RGBA;
     pfd_DM.cColorBits = 32;
+    //Depth
+    pfd_DM.cDepthBits = 32;
     pfd_DM.cRedBits = 8;
     pfd_DM.cGreenBits = 8;
     pfd_DM.cBlueBits = 8;
@@ -335,15 +343,15 @@ void Initialize()
         "#version 450 core" \
         "\n" \
         "in vec4 vPosition;" \
-        "in vec4 vColor;" \
+        "in vec2 vTexCoord;" \
         "uniform mat4 u_mvp_matrix;" \
-        "out vec4 out_Color;" \
+        "out vec2 out_TexCoord;" \
         "void main(void)" \
         "\n" \
         "{" \
         "\n" \
         "gl_Position = u_mvp_matrix * vPosition;" \
-        "out_Color = vColor;" \
+        "out_TexCoord = vTexCoord;" \
         "\n" \
         "}";
 
@@ -376,6 +384,10 @@ void Initialize()
             }
         }
     }
+    else
+    {
+        fprintf_s(gpFile_DM, "\nVertex shader Log : Successfull \n");
+    }
 
     /* Fragment Shader Object */
     gFragmentShaderObject = glCreateShader(GL_FRAGMENT_SHADER);
@@ -383,13 +395,14 @@ void Initialize()
     const GLchar* fragmentShaderSourceCode =
         "#version 450 core" \
         "\n" \
+        "in vec2 out_TexCoord;" \
+        "uniform sampler2D u_Texture_Sampler;" \
         "out vec4 FragColor;" \
-        "in vec4 out_Color;" \
         "void main(void)" \
         "\n" \
         "{" \
         "\n" \
-        "FragColor = out_Color;" \
+        "FragColor = texture(u_Texture_Sampler, out_TexCoord);" \
         "\n"
         "}";
 
@@ -416,6 +429,10 @@ void Initialize()
             }
         }
     }
+    else
+    {
+        fprintf_s(gpFile_DM, "\nFragment shader Log : Successfull \n");
+    }
 
 
     gshaderProgramObject = glCreateProgram();
@@ -424,7 +441,7 @@ void Initialize()
     glAttachShader(gshaderProgramObject, gFragmentShaderObject);
 
     glBindAttribLocation(gshaderProgramObject, DVM_ATTTRIBUTE_POSITION, "vPosition");
-    glBindAttribLocation(gshaderProgramObject, DVM_ATTTRIBUTE_COLOR, "vColor");
+    glBindAttribLocation(gshaderProgramObject, DVM_ATTTRIBUTE_TEXCORD, "vTexCoord");
 
     glLinkProgram(gshaderProgramObject);
 
@@ -446,96 +463,130 @@ void Initialize()
             }
         }
     }
+    else
+    {
+        fprintf_s(gpFile_DM, "\nShader program Link Log : Successfull \n");
+    }
 
     gMVPMatrixUniform = glGetUniformLocation(gshaderProgramObject, "u_mvp_matrix");
 
-    /*New for traingle */
-    const GLfloat triangleVertices[] =
-    {
-        0.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f
-    };
-    
-    const GLfloat triangleColor[] =
-    {
-        1.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 1.0f
-    };
+    texture_Sampler_Uniform = glGetUniformLocation(gshaderProgramObject, "u_Texture_Sampler");
 
-    /*New for Suare */
-    const GLfloat SquareVertices[] =
+    /*New for Cube */
+    const GLfloat CubeVertices[] =
     {
         1.0f, 1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f
+       -1.0f, 1.0f, 0.0f,
+       -1.0f, -1.0f, 0.0f,
+       1.0f, -1.0f, 0.0f,
+
+       2.41421f, 1.0f, -1.41421f,
+       1.0f, 1.0f, 0.0f,
+       1.0f, -1.0f, 0.0f,
+       2.41421f, -1.0f, -1.41421f
     };
 
-    const GLfloat SquareColor[] =
+    const GLfloat CubeColor[] =
     {
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f,
-        0.0f, 0.0f, 1.0f
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f
+
     };
 
-    /*Triangle Begen*/
-    glGenVertexArrays(1, &gVao_Triangle);
-    glBindVertexArray(gVao_Triangle);
+
+    /*Cube Begen*/
+    glGenVertexArrays(1, &gVao_Cube);
+    glBindVertexArray(gVao_Cube);
 
     /*Position */
-    glGenBuffers(1, &gVbo_Triangle_Position);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Triangle_Position);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-    /*Color */
-    glGenBuffers(1, &gVbo_Triangle_Color);
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Triangle_Color);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleColor), triangleColor, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_COLOR);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glGenBuffers(1, &gVbo_Cube_Position);
 
-    
-    glBindVertexArray(0);
-
-    /*Square Begen*/
-    glGenVertexArrays(1, &gVao_Square);
-    glBindVertexArray(gVao_Square);
-
-    /*Position */
-    glGenBuffers(1, &gVbo_Square_Position);
-
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Square_Position);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(SquareVertices), SquareVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Position);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), CubeVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     /*Color */
-    glGenBuffers(1, &gVbo_Square_Color);
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Square_Color);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(SquareColor), SquareColor, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_COLOR);
+    glGenBuffers(1, &gVbo_Cube_Texture);
+    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Texture);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeColor), CubeColor, GL_STATIC_DRAW);
+    glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+    glShadeModel(GL_SMOOTH);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glEnable(GL_TEXTURE_2D);
+    LoadGLTexture(&My_Texture);
+
     gPerspectiveProjectMatix = mat4::identity();
-
 }
+
+bool LoadGLTexture(GLuint* Text_Image)
+{
+    //LOCAL VARIABLE
+    bool bResult = false;
+
+    //Local Function
+    void MakeCheckImage(void);
+
+    //From here We are Starting the Texturing Code
+
+    MakeCheckImage();
+
+    glGenTextures(1, Text_Image);
+
+    glBindTexture(GL_TEXTURE_2D, *Text_Image);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    //Setting Texture Param
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECK_IMAGE_WIDTH, CHECK_IMAGE_HIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, Check_Image);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+    return (bResult);
+}
+
+
+void MakeCheckImage(void)
+{
+    int i, j, c;
+    for (i = 0; i < CHECK_IMAGE_HIGHT; i++)
+    {
+        for (j = 0; j < CHECK_IMAGE_WIDTH; j++)
+        {
+            c = (((i & 0x8) == 0) ^ ((j & 0x8) == 0)) * 255;
+
+            Check_Image[i][j][0] = (GLubyte)c;
+            Check_Image[i][j][1] = (GLubyte)c;
+            Check_Image[i][j][2] = (GLubyte)c;
+            Check_Image[i][j][3] = (GLubyte)c;
+        }
+    }
+}
+
 void Resize(int width, int height)
 {
     if (height <= 0)
@@ -558,38 +609,26 @@ void Display()
 
     mat4 modelViewMatrix;
     mat4 TranslateMatrix;
-    mat4 RotationMatrtix;
     mat4 modelViewProjectionMatrix;
 
     modelViewMatrix = mat4::identity();
-    TranslateMatrix = vmath::translate(-2.0f, 0.0f, -6.0f);
-    RotationMatrtix = mat4::identity();
+    TranslateMatrix = vmath::translate(0.0f, 0.0f, -4.0f);
 
     modelViewProjectionMatrix = mat4::identity();
-    RotationMatrtix = vmath::rotate(T_angle, 0.0f, 1.0f, 0.0f);
-    /*Assigning Translation matrix to model view matrix*/
-    modelViewMatrix = TranslateMatrix * RotationMatrtix;
+    modelViewMatrix = TranslateMatrix;
     modelViewProjectionMatrix = gPerspectiveProjectMatix * modelViewMatrix;
 
     glUniformMatrix4fv(gMVPMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
 
-    glBindVertexArray(gVao_Triangle);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, My_Texture);
+    glUniform1i(texture_Sampler_Uniform, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    glBindVertexArray(0);
-
-    modelViewMatrix = mat4::identity();
-    TranslateMatrix = vmath::translate(2.0f, 0.0f, -6.0f);
-    modelViewProjectionMatrix = mat4::identity();
-    RotationMatrtix = vmath::rotate(R_angle, 1.0f, 0.0f, 0.0f);
-    modelViewMatrix = TranslateMatrix * RotationMatrtix;
-    modelViewProjectionMatrix = gPerspectiveProjectMatix * modelViewMatrix;
-    glUniformMatrix4fv(gMVPMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
-
-    glBindVertexArray(gVao_Square);
+    glBindVertexArray(gVao_Cube);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
 
     glBindVertexArray(0);
 
@@ -600,6 +639,7 @@ void Display()
     SwapBuffers(ghdc_DM);
 
 }
+
 void Update()
 {
     if (T_angle >= 360.0f)
@@ -607,13 +647,6 @@ void Update()
         T_angle = 0.0f;
     }
     T_angle = T_angle + 0.1f;
-
-    if (R_angle >= 360.0f)
-    {
-        R_angle = 0.0f;
-    }
-    R_angle = R_angle + 0.1f;
-
 }
 
 void unInitialize()
@@ -628,40 +661,22 @@ void unInitialize()
         ShowCursor(TRUE);
     }
 
-    if (gVao_Triangle)
+    if (gVao_Cube)
     {
-        glDeleteVertexArrays(1, &gVao_Triangle);
-        gVao_Triangle = 0;
+        glDeleteVertexArrays(1, &gVao_Cube);
+        gVao_Cube = 0;
     }
 
-    if (gVbo_Triangle_Position)
+    if (gVbo_Cube_Position)
     {
-        glDeleteBuffers(1, &gVbo_Triangle_Position);
-        gVbo_Triangle_Position = 0;
+        glDeleteBuffers(1, &gVbo_Cube_Position);
+        gVbo_Cube_Position = 0;
     }
 
-    if (gVbo_Triangle_Color)
+    if (gVbo_Cube_Texture)
     {
-        glDeleteBuffers(1, &gVbo_Triangle_Color);
-        gVbo_Triangle_Color = 0;
-    }
-
-    if (gVao_Square)
-    {
-        glDeleteVertexArrays(1, &gVao_Square);
-        gVao_Square = 0;
-    }
-
-    if (gVbo_Square_Position)
-    {
-        glDeleteBuffers(1, &gVbo_Square_Position);
-        gVbo_Square_Position = 0;
-    }
-
-    if (gVbo_Square_Color)
-    {
-        glDeleteBuffers(1, &gVbo_Square_Color);
-        gVbo_Square_Color = 0;
+        glDeleteBuffers(1, &gVbo_Cube_Texture);
+        gVbo_Cube_Texture = 0;
     }
 
 
@@ -695,6 +710,11 @@ void unInitialize()
         glUseProgram(0);
     }
 
+    if (My_Texture)
+    {
+        glDeleteTextures(1, &My_Texture);
+        My_Texture = 0;
+    }
 
     if (wglGetCurrentContext() == ghrc_DM)
     {
@@ -722,5 +742,3 @@ void unInitialize()
     }
 
 }
-
-

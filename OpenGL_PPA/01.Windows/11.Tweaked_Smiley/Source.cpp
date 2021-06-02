@@ -67,6 +67,8 @@ GLuint texture_Sampler_Uniform;
 
 GLuint gMVPMatrixUniform;
 
+int KeyPressed = 0;
+
 mat4 gPerspectiveProjectMatix;
 
 
@@ -198,7 +200,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
         case VK_ESCAPE:
             DestroyWindow(hwnd);
             break;
-
+        case 'a':
+        case 'A':
+            KeyPressed = 0;
+             break;
+        case 'b':
+        case 'B':
+            KeyPressed = 1;
+            break;
+        case 'c':
+        case 'C':
+            KeyPressed = 2;
+            break;
+        case 'd':
+        case 'D':
+            KeyPressed = 3;
+            break;
         case 0x46:
         case 0x66:
             ToggelFullScreen();
@@ -467,22 +484,13 @@ void Initialize()
     texture_Sampler_Uniform = glGetUniformLocation(gshaderProgramObject, "u_Texture_Sampler");
 
     /*New for Cube */
-    const GLfloat CubeVertices[] =
+    const GLfloat QuadVertices[] =
     {
         0.5f, 0.5f, 0.0f,
        -0.5f, 0.5f, 0.0f,
        -0.5f, -0.5f, 0.0f,
        0.5f, -0.5f, 0.0f
     };
-
-    const GLfloat CubeColor[] =
-    {
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f
-    };
-
 
     /*Cube Begen*/
     glGenVertexArrays(1, &gVao_Cube);
@@ -492,7 +500,7 @@ void Initialize()
     glGenBuffers(1, &gVbo_Cube_Position);
 
     glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Position);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), CubeVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(QuadVertices), QuadVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -500,20 +508,19 @@ void Initialize()
     /*Color */
     glGenBuffers(1, &gVbo_Cube_Texture);
     glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Texture);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeColor), CubeColor, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (4 * 2) * sizeof(float), NULL, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glBindVertexArray(0);
 
+   
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    glShadeModel(GL_SMOOTH);
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     glEnable(GL_TEXTURE_2D);
     LoadGLTexture(&Smiley_Texture, MAKEINTRESOURCE(MYSMILEY));
@@ -526,23 +533,24 @@ bool LoadGLTexture(GLuint* Texture, TCHAR Resource_ID[])
     bool bResult = false;
 
     hBitmap = (HBITMAP)LoadImage(GetModuleHandle(NULL), Resource_ID, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+    glGenTextures(1, Texture);
+    glBindTexture(GL_TEXTURE_2D, *Texture);
+
     if (hBitmap != NULL)
     {
         bResult = true;
         GetObject(hBitmap, sizeof(BITMAP), &bmp);
 
-        //From here We are Starting the Texturing Code
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glGenTextures(1, Texture);
-        glBindTexture(GL_TEXTURE_2D, *Texture);
-        //Setting Texture Param
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-        //gluBuild2DMipmaps(GL_TEXTURE_2D, 3, bmp.bmWidth, bmp.bmHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, bmp.bmBits);
+        
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bmp.bmWidth, bmp.bmHeight, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, bmp.bmBits);
         glGenerateMipmap(GL_TEXTURE_2D);
         DeleteObject(hBitmap);
     }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+
     return (bResult);
 }
 
@@ -560,11 +568,66 @@ void Resize(int width, int height)
 
 void Display()
 {
+    GLfloat quad_Texture[8];
+
+    if (KeyPressed == 0)
+    {
+        quad_Texture[0] = 0.0f;
+        quad_Texture[1] = 1.0f;
+        quad_Texture[2] = 1.0f;
+        quad_Texture[3] = 1.0f;
+        quad_Texture[4] = 1.0f;
+        quad_Texture[5] = 0.0f;
+        quad_Texture[6] = 0.0f;
+        quad_Texture[7] = 0.0f;
+    }
+    else if (KeyPressed == 1 ){
+        quad_Texture[0] = 0.5f;
+        quad_Texture[1] = 0.5f;
+        quad_Texture[2] = 0.0f;
+        quad_Texture[3] = 0.5f;
+        quad_Texture[4] = 0.0f;
+        quad_Texture[5] = 0.0f;
+        quad_Texture[6] = 0.5f;
+        quad_Texture[7] = 0.0f;
+
+    }
+    else if (KeyPressed == 2) {
+        quad_Texture[0] = 2.0f;
+        quad_Texture[1] = 2.0f;
+        quad_Texture[2] = 0.0f;
+        quad_Texture[3] = 2.0f;
+        quad_Texture[4] = 0.0f;
+        quad_Texture[5] = 0.0f;
+        quad_Texture[6] = 2.0f;
+        quad_Texture[7] = 0.0f;
+
+    }
+    else if (KeyPressed == 3) {
+
+        quad_Texture[0] = 0.5f;
+        quad_Texture[1] = 0.5f;
+        quad_Texture[2] = 0.5f;
+        quad_Texture[3] = 0.5f;
+        quad_Texture[4] = 0.5f;
+        quad_Texture[5] = 0.5f;
+        quad_Texture[6] = 0.5f;
+        quad_Texture[7] = 0.5f;
+    }
+
+   
     void Update(void);
     //code
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(gshaderProgramObject);
+
+    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Texture);
+    glBufferData(GL_ARRAY_BUFFER, (4 * 2) * sizeof(float), quad_Texture, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 
     mat4 modelViewMatrix;
     mat4 TranslateMatrix;
@@ -584,6 +647,7 @@ void Display()
     glUniform1i(texture_Sampler_Uniform, 0);
 
     glBindVertexArray(gVao_Cube);
+
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     
