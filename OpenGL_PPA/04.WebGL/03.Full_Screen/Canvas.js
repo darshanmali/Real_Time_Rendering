@@ -42,7 +42,6 @@ function drowTex(tex)
     context.textAlign = "center"; 
     context.textBaseline = "middle";
     context.font = "48px serif";
-
     context.fillStyle = "green";
     context.fillText(tex, canvas.clientWidth / 2, canvas.clientHeight / 2);
 
@@ -60,11 +59,22 @@ function ToggleFullscreen(params) {
     // aapan screen la full screen aata kartoy.
     if(fullscreen_element == null)
     {
-        canvas.requestFullscreen();
-    }
-    else if(fullscreen_element == document.msFullscreenElement)
-    {
-        canvas.msFullscreenElement();
+        if(canvas.requestFullscreen)
+        {
+            canvas.requestFullscreen();
+        }
+        else if(canvas.webkitRequestFullscreen)
+        {
+            canvas.webkitrequestFullscreen();
+        }
+        else if(canvas.mozRequestFullScreen)
+        {
+            canvas.mozRequestFullScreen();
+        }
+        else if(canvas.msrequestFullscreen)
+        {
+            canvas.msrequestFullscreen();
+        }
     }
     else
     {
@@ -82,7 +92,7 @@ function keyDown(event) {
     switch (event.keyCode) {
         case 70:
             ToggleFullscreen();
-            drowTex("Hello world.!!!");
+            
             break;
     
         default:
