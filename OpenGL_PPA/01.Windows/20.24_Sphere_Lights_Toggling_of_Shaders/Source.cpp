@@ -36,9 +36,14 @@ FILE* gpFile_DM = NULL;
 HWND ghwnd_DM = NULL;
 HDC ghdc_DM = NULL;
 HGLRC ghrc_DM = NULL;
+
+RECT rc_DM;
+
 GLfloat L_angle_1 = 0.0f;
 GLfloat L_angle_2 = 0.0f;
 GLfloat L_angle_3 = 0.0f;
+
+GLuint count = 0;
 
 DWORD dwStyle_D;
 WINDOWPLACEMENT wpPrev_DM = { sizeof(WINDOWPLACEMENT) };
@@ -62,6 +67,11 @@ GLuint gVao_Sphere;
 GLuint gVbo_sphere_position;
 GLuint gVbo_sphere_normal;
 GLuint gVbo_sphere_element;
+
+GLuint gVao_Lines;
+GLuint gVbo_Lines_position;
+GLuint gVbo_Lines_Color;
+
 
 /*New For Sphere*/
 float sphere_vertices[1146];
@@ -88,6 +98,7 @@ GLuint KA_Uniform_DM;/*Material Ambient*/
 GLuint KD_Uniform_DM;/*Material Deffuse*/
 GLuint KS_Uniform_DM;/*Material Specular*/
 GLuint shininess;
+
 
 GLfloat material_Ambient[3][24] = { 
 
@@ -212,6 +223,7 @@ GLfloat material_Specular[3][24] = {
 0.7f, 0.7f, 0.04f
 
 };
+
 GLfloat Shininess[24] = { 
     0.6f * 128.0f,
     0.1f * 128.0f,
@@ -374,8 +386,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreIntance, LPSTR lpszCmdLine
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 
-    RECT rc_DM;
-
     //Function
     void ToggelFullScreen(void);
 
@@ -501,6 +511,7 @@ void Initialize()
     pfd_DM.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
     pfd_DM.iPixelType = PFD_TYPE_RGBA;
     pfd_DM.cColorBits = 32;
+
     //Depth
     pfd_DM.cDepthBits = 32;
     pfd_DM.cRedBits = 8;
@@ -579,7 +590,7 @@ void Initialize()
         "out vec4 eye_cordinates;\n" \
         "out vec3 transformed_normal;\n"  \
         "void main(void){\n" \
-        "eye_cordinates = vec4(u_view_matrix * u_model_matrix * vPosition);\n" \
+        "eye_cordinates = normalize(vec4(u_view_matrix * u_model_matrix * vPosition));\n" \
         "transformed_normal = normalize(mat3(u_view_matrix * u_model_matrix) * vNormal);\n" \
         "gl_Position = u_p_matrix * u_view_matrix * u_model_matrix * vPosition;\n" \
         "}";
@@ -644,7 +655,7 @@ void Initialize()
         "ambient = u_la * u_ka;\n" \
         "diffuse = u_ld * u_kd * max(dot(light_direction, transformed_normal), 0.0);\n" \
         "specular = u_ls * u_ks * pow( max(dot(reflection_vector, view_vector), 0.0), u_shininess);\n" \
-        "fong_ads_light = fong_ads_light + ambient + diffuse + specular;\n" \
+        "fong_ads_light = ambient + diffuse + specular;\n" \
         "FragColor = vec4(fong_ads_light, 1.0f);\n"\
         "}\n" \
         "else{\n" \
@@ -726,6 +737,58 @@ void Initialize()
     gNumVertices = getNumberOfSphereVertices();
     gNumElements = getNumberOfSphereElements();
 
+    /*Lines */
+
+    GLfloat Lines_vertices[] = {
+        -0.8f, 0.8f, 0.0f,
+        -0.8f, 0.8f, 0.0f,
+
+        -1.0f, -1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+    
+        1.0f, -1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+
+        1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f
+
+    };
+        
+    GLfloat Lines_Color[] = {
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+
+        1.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 1.0f
+    };
+
+    glGenVertexArrays(1, &gVao_Lines);
+    glBindVertexArray(gVao_Lines);
+
+    /*For Vertex */
+    glGenBuffers(1, &gVbo_Lines_position);
+    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Lines_position);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Lines_vertices), Lines_vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    /*For Color */
+    glGenBuffers(1, &gVbo_Lines_Color);
+    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Lines_Color);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Lines_Color), Lines_Color, GL_STATIC_DRAW);
+    glVertexAttribPointer(DVM_ATTTRIBUTE_COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(DVM_ATTTRIBUTE_COLOR);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glBindVertexArray(0);
+
     glGenVertexArrays(1, &gVao_Sphere);
     glBindVertexArray(gVao_Sphere);
 
@@ -769,9 +832,10 @@ void Resize(int width, int height)
         height = 1;
     }
 
-    glViewport(0, 0, (GLsizei)width , (GLsizei)height );
+    //glViewport(10, 10 +((rc_DM.bottom / 6) * 5), rc_DM.right / 4, rc_DM.bottom / 6);
 
-    gPerspectiveProjectMatix = vmath::perspective(44.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+   
+    gPerspectiveProjectMatix = vmath::perspective(44.0f,  (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
     
 }
 
@@ -781,7 +845,6 @@ void Display()
     //code
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     glUseProgram(gshaderProgramObject_PF);
 
     mat4 ModelMatrix;
@@ -789,16 +852,21 @@ void Display()
     mat4 TranslateMatrix;
     mat4 ScaleMatrix;
     mat4 PMatrix;
-
+    
     ModelMatrix = mat4::identity();
     ViewMatrix = mat4::identity();
     TranslateMatrix = mat4::identity();
     ScaleMatrix = mat4::identity();
     PMatrix = mat4::identity();
-    
-    ScaleMatrix = vmath::scale(0.3f, 0.3f, 0.3f);
+    GLfloat y = 0.0f,
+            x = 0.0f;
+
     PMatrix = gPerspectiveProjectMatix;
 
+    TranslateMatrix = vmath::translate(x, y, -1.0f);
+    ModelMatrix = TranslateMatrix * ScaleMatrix;
+
+    glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
     glUniformMatrix4fv(gVMatrixUniform_DM, 1, GL_FALSE, ViewMatrix);
     glUniformMatrix4fv(gPMatrixUniform_DM, 1, GL_FALSE, PMatrix);
 
@@ -810,23 +878,23 @@ void Display()
         if (X_Rotation)
         {
             Lights.lPosition[0] = 0.0f;
-            Lights.lPosition[1] = 2.0f * sinf(L_angle_1);
-            Lights.lPosition[2] = 2.0f * cosf(L_angle_1);
-            Lights.lPosition[3] = 1.0f;
+            Lights.lPosition[1] = 0.1f * sinf(L_angle_1);
+            Lights.lPosition[2] = 0.1f * cosf(L_angle_1);
+            Lights.lPosition[3] = 0.0f;
         }
         else if (Y_Rotation)
         {
-            Lights.lPosition[0] = 2.0f * sinf(L_angle_1); 
+            Lights.lPosition[0] = 0.25f * sinf(L_angle_1); 
             Lights.lPosition[1] = 0.0f;
-            Lights.lPosition[2] = 2.0f * cosf(L_angle_1);
-            Lights.lPosition[3] = 1.0f;
+            Lights.lPosition[2] = 0.25f * cosf(L_angle_1);
+            Lights.lPosition[3] = 0.25f;
         }
         else if (Z_Rotation)
         {
-            Lights.lPosition[0] = 2.0f * sinf(L_angle_1); 
-            Lights.lPosition[1] = 2.0f * cosf(L_angle_1);
+            Lights.lPosition[0] = 0.25f * sinf(L_angle_1); 
+            Lights.lPosition[1] = 0.25f * cosf(L_angle_1);
             Lights.lPosition[2] = 0.0f;
-            Lights.lPosition[3] = 1.0f;
+            Lights.lPosition[3] = 0.25f;
         }
 
         glUniform3fv(LA_Uniform_DM, 1, Lights.lAmbient);
@@ -834,8 +902,6 @@ void Display()
         glUniform3fv(LS_Uniform_DM, 1, Lights.lSpecular);
         glUniform4fv(LPosition_Uniform_DM, 1, Lights.lPosition);
  
-        
-
         update();
     }
     else
@@ -843,33 +909,553 @@ void Display()
         glUniform1i(LKeyPressedUniform_DM, 0);
     }
    
-    GLfloat x = -1.0f,
-            y = 0.6f;
-    
-    for (int i = 0; i < 24; i++)
-    {
-        glUniform1f(shininess, Shininess[i]);
-        glUniform3f(KA_Uniform_DM, material_Ambient[0][i], material_Ambient[1][i], material_Ambient[2][i]);
-        glUniform3f(KD_Uniform_DM, material_Diffuse[0][i], material_Diffuse[1][i], material_Diffuse[2][i]);
-        glUniform3f(KS_Uniform_DM, material_Specular[0][i], material_Specular[1][i], material_Specular[2][i]);
-        
-        TranslateMatrix = vmath::translate( x, y, -3.0f);
-        ModelMatrix = TranslateMatrix * ScaleMatrix;
-        glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+   
+   //0
+    glViewport(0, 0, (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+   glUniform1f(shininess, Shininess[0]);
 
-        glBindVertexArray(gVao_Sphere);
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
-        glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
-        
-        glBindVertexArray(0);
-        x += 0.4f;
-        if (x > 1.0f)
-        {
-            y -= 0.4f;
-            x = -1.0f;
-        }
-    }
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate( x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+   
+   glBindVertexArray(0);
+   count++;
+
+   //1
+   glViewport(0, (GLsizei)rc_DM.bottom / 6, (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //2
+   glViewport(0, (GLsizei)rc_DM.bottom / 6 + (GLsizei)rc_DM.bottom / 6, (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //3
+   glViewport(0, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //4
+   glViewport(0, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //5
+   glViewport(0, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //6
+   glViewport((GLsizei)rc_DM.right / 4, 0, (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+   
+
+   //7
+   glViewport((GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+
+   //8
+   glViewport((GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+   
+   
+   //9
+   glViewport((GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //10
+   glViewport((GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //11
+   glViewport((GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //12
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, 0, (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //13
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+
+   //14
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+   
+
+   //15
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //16
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+
+   //17
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //18
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, 0, (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //19
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+
+   //20
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //21
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+
+   //22
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   //23
+   glViewport((GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4 + (GLsizei)rc_DM.right / 4, ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6) + ((GLsizei)rc_DM.bottom / 6), (GLsizei)rc_DM.right / 6, (GLsizei)rc_DM.bottom / 6);
+
+   glUniform1f(shininess, Shininess[0]);
+
+   glUniform3f(KA_Uniform_DM, material_Ambient[0][count], material_Ambient[1][count], material_Ambient[2][count]);
+   glUniform3f(KD_Uniform_DM, material_Diffuse[0][count], material_Diffuse[1][count], material_Diffuse[2][count]);
+   glUniform3f(KS_Uniform_DM, material_Specular[0][count], material_Specular[1][count], material_Specular[2][count]);
+
+   ScaleMatrix = vmath::scale(0.5f, 0.5f, 0.5f);
+   TranslateMatrix = vmath::translate(x, y, -1.0f);
+   ModelMatrix = TranslateMatrix * ScaleMatrix;
+   glUniformMatrix4fv(gMMatrixUniform_DM, 1, GL_FALSE, ModelMatrix);
+
+   glBindVertexArray(gVao_Sphere);
+
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gVbo_sphere_element);
+   glDrawElements(GL_TRIANGLES, gNumElements, GL_UNSIGNED_SHORT, 0);
+
+   glBindVertexArray(0);
+   count++;
+
+   count = 0;
+
+   //y += 0.4f;
+   if (y > 1.0f)
+   {
+       x -= 0.8f;
+       y = -1.0f;
+   }
+   
+
+    glBindVertexArray(gVao_Lines);
+
+    glDrawArrays(GL_LINES, 0, 2);
+
+    glBindVertexArray(0);
+
     glUseProgram(0);
  
     SwapBuffers(ghdc_DM);
@@ -905,6 +1491,25 @@ void unInitialize()
         SetWindowPos(ghwnd_DM, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_FRAMECHANGED);
         ShowCursor(TRUE);
     }
+
+    if (gVao_Lines)
+    {
+        glDeleteVertexArrays(1, &gVao_Lines);
+        gVao_Lines = 0;
+    }
+
+    if (gVbo_Lines_position)
+    {
+        glDeleteBuffers(1, &gVbo_Lines_position);
+        gVbo_Lines_position = 0;
+    }
+
+    if (gVbo_Lines_Color)
+    {
+        glDeleteBuffers(1, &gVbo_Lines_Color);
+        gVbo_Lines_Color = 0;
+    }
+
 
     if (gVao_Sphere)
     {
