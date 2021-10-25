@@ -1,0 +1,20 @@
+/* how to compile and run OpenGL Programs on Ubuntu. */
+
+g++ -o ogl ogl.cpp -lX11 -lGL -lGLU -lGLEW 
+
+if got an error while running the above command do below steps.
+
+1. come to home directary
+2. give below command
+
+	-> ls -al
+	-> sudo nano / piko / vi .bashrc
+ld lybrary - path 
+
+/* To find and see all files use this command : ls -al
+
+
+
+/* how to link  */
+
+g++ ogl -O ogl.cpp -L . -lsphere 
