@@ -228,7 +228,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
     switch (iMsg)
     {
     case WM_PAINT:
-        GetClientRect(hwnd, &rc_DM);
+        GetClientRect(hwper_Vertexnd, &rc_DM);
         Resize(rc_DM.right, rc_DM.bottom);
         break;
 

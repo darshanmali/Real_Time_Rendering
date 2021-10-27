@@ -53,17 +53,12 @@ GLXFBConfig gGLXFBConfig;
 GLfloat P_angle = 0.0f;
 GLfloat C_angle = 0.0f;
 
-GLuint gVao_Pyramid;
-GLuint gVbo_Pyramid_Position;
-GLuint gVbo_Pyramid_Texture;
-
 GLuint gVao_Cube;
 GLuint gVbo_Cube_Position;
 GLuint gVbo_Cube_Texture;
 
-GLuint Stone_Texture = 0;
-GLuint Kundali_Texture = 0;
-
+int KeyPressed = 0;
+GLuint Smiley_Texture = 0;
 GLuint texture_Sampler_Uniform;
 
 GLuint gMVPMatrixUniform;
@@ -112,6 +107,26 @@ int main(void)
                 case XK_Escape:
                     bDone = true;
                     break;
+                    case XK_A:
+					case XK_a:
+					KeyPressed = 0;
+					glEnable(GL_TEXTURE_2D);
+					break; 
+					case XK_B:
+					case XK_b:
+					KeyPressed = 1;
+					glEnable(GL_TEXTURE_2D);
+					break;
+					case XK_C:
+					case XK_c:
+					KeyPressed = 2;
+					glEnable(GL_TEXTURE_2D);
+					break;
+					case XK_D:
+					case XK_d:
+					KeyPressed = 3;
+					glEnable(GL_TEXTURE_2D);
+					break; 
                 case XK_F:
                 case XK_f:
                     if (bFullscreen == true)
@@ -131,6 +146,7 @@ int main(void)
                     break;
                 }
                 break;
+                
             /* Mouse Events */
             case ButtonPress:
                 switch (event.xbutton.button)
@@ -336,7 +352,7 @@ void CreateWindow(void)
         exit(1);
     }
 
-    XStoreName(gpDisplay, gWindow, "Darshan's OpenGL PP : 3D Pyramid Cube Texture.");
+    XStoreName(gpDisplay, gWindow, "Darshan's OpenGL PP : Smiley Texture.");
 
     Atom windowManagerDelete = XInternAtom(gpDisplay, "WM_DELETE_WINDOW", True);
     XSetWMProtocols(gpDisplay, gWindow, &windowManagerDelete, 1);
@@ -528,133 +544,16 @@ void Initialize(void)
 
     texture_Sampler_Uniform = glGetUniformLocation(gshaderProgramObject, "u_Texture_Sampler");
 
-    /*New for Pyramid*/
-    const GLfloat PyramidVertices[] =
-        {
-            0.0f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-
-            0.0f, 0.5f, 0.0f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, -0.5f,
-
-            0.0f, 0.5f, 0.0f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            0.0f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f};
-    const GLfloat PyramidColor[] =
-        {
-            0.5f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-            0.5f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-
-            0.5f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-            0.5f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f};
-
     /*New for Cube*/
     const GLfloat Cube_Vertices[] =
         {
             0.5f, 0.5f, 0.5f,
             -0.5f, 0.5f, 0.5f,
             -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, -0.5f,
-
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-
-            0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f
-
+            0.5f, -0.5f, 0.5f
+           
         };
 
-    const GLfloat CubeColor[] =
-        {
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f
-
-        };
-
-    /*Pyramid Begen*/
-    glGenVertexArrays(1, &gVao_Pyramid);
-    glBindVertexArray(gVao_Pyramid);
-
-    /*Position */
-    glGenBuffers(1, &gVbo_Pyramid_Position);
-
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Pyramid_Position);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(PyramidVertices), PyramidVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    /*Color */
-    glGenBuffers(1, &gVbo_Pyramid_Texture);
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Pyramid_Texture);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(PyramidColor), PyramidColor, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
 
     /*CUBE Begen*/
     glGenVertexArrays(1, &gVao_Cube);
@@ -671,7 +570,7 @@ void Initialize(void)
 
     glGenBuffers(1, &gVbo_Cube_Texture);
     glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Texture);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeColor), CubeColor, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, (4 * 2) * sizeof(float), NULL, GL_DYNAMIC_DRAW);
     glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -685,15 +584,14 @@ void Initialize(void)
     glDepthFunc(GL_LEQUAL);
 
 
-
     glEnable(GL_TEXTURE_2D);
-    Stone_Texture = LoadBitmapAsTexture("Stone.bmp");
-    if(Stone_Texture == 0)
+
+    Smiley_Texture = LoadBitmapAsTexture("Smiley.bmp");
+    if(!Smiley_Texture)
     {
         printf("Unable to getthe Image...!!!\n");
     }
-    Kundali_Texture = LoadBitmapAsTexture("Vijay_Kundali.bmp");
-
+    
     gPerspectiveProjectMatix = mat4::identity();
 
     Resize(giWindowWidth, giWindowHeight);
@@ -750,6 +648,53 @@ void Resize(int Width, int Height)
 
 void Render(void)
 {
+    GLfloat quad_Texture[8];
+
+    if (KeyPressed == 0)
+    {
+        quad_Texture[0] = 0.0f;
+        quad_Texture[1] = 1.0f;
+        quad_Texture[2] = 1.0f;
+        quad_Texture[3] = 1.0f;
+        quad_Texture[4] = 1.0f;
+        quad_Texture[5] = 0.0f;
+        quad_Texture[6] = 0.0f;
+        quad_Texture[7] = 0.0f;
+    }
+    else if (KeyPressed == 1 ){
+        quad_Texture[0] = 0.5f;
+        quad_Texture[1] = 0.5f;
+        quad_Texture[2] = 0.0f;
+        quad_Texture[3] = 0.5f;
+        quad_Texture[4] = 0.0f;
+        quad_Texture[5] = 0.0f;
+        quad_Texture[6] = 0.5f;
+        quad_Texture[7] = 0.0f;
+
+    }
+    else if (KeyPressed == 2) {
+        quad_Texture[0] = 2.0f;
+        quad_Texture[1] = 2.0f;
+        quad_Texture[2] = 0.0f;
+        quad_Texture[3] = 2.0f;
+        quad_Texture[4] = 0.0f;
+        quad_Texture[5] = 0.0f;
+        quad_Texture[6] = 2.0f;
+        quad_Texture[7] = 0.0f;
+
+    }
+    else if (KeyPressed == 3) {
+
+        quad_Texture[0] = 0.5f;
+        quad_Texture[1] = 0.5f;
+        quad_Texture[2] = 0.5f;
+        quad_Texture[3] = 0.5f;
+        quad_Texture[4] = 0.5f;
+        quad_Texture[5] = 0.5f;
+        quad_Texture[6] = 0.5f;
+        quad_Texture[7] = 0.5f;
+    }
+
     void Update();
 
     /* Code Began */
@@ -757,53 +702,30 @@ void Render(void)
 
     glUseProgram(gshaderProgramObject);
 
+    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Texture);
+    glBufferData(GL_ARRAY_BUFFER, (4 * 2) * sizeof(float), quad_Texture, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
     mat4 modelViewMatrix = mat4::identity();
-    mat4 RotationMatrtix = mat4::identity();
     mat4 TranslateMatrix = mat4::identity();
     mat4 modelViewProjectionMatrix = mat4::identity();
 
-    TranslateMatrix = vmath::translate(-1.0f, 0.0f, -4.0f);
-    RotationMatrtix = vmath::rotate(P_angle, 0.0f, 1.0f, 0.0f);
-    modelViewMatrix = TranslateMatrix * RotationMatrtix;
-    modelViewProjectionMatrix = gPerspectiveProjectMatix * modelViewMatrix;
-    glUniformMatrix4fv(gMVPMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
-    glUniform1i(texture_Sampler_Uniform, 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Stone_Texture);
-
-    glBindVertexArray(gVao_Pyramid);
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawArrays(GL_TRIANGLES, 3, 3);
-    glDrawArrays(GL_TRIANGLES, 6, 3);
-    glDrawArrays(GL_TRIANGLES, 9, 3);
-
-    glBindVertexArray(0);
-
-    modelViewProjectionMatrix = mat4::identity();
-    modelViewMatrix = mat4::identity();
-
-    TranslateMatrix = vmath::translate(1.0f, 0.0f, -4.0f);
-    RotationMatrtix = vmath::rotate(P_angle, 0.0f, 1.0f, 0.0f);
-    modelViewMatrix = TranslateMatrix * RotationMatrtix;
+    TranslateMatrix = vmath::translate(0.0f, 0.0f, -3.0f);
+    modelViewMatrix = TranslateMatrix;
     modelViewProjectionMatrix = gPerspectiveProjectMatix * modelViewMatrix;
 
     glUniformMatrix4fv(gMVPMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
     glUniform1i(texture_Sampler_Uniform, 0);
-
+    glBindTexture(GL_TEXTURE_2D, Smiley_Texture);
+    
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Kundali_Texture);
-
+    
     glBindVertexArray(gVao_Cube);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 8, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 12, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 16, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
-
+    
     glBindVertexArray(0);
 
     glUseProgram(0);
@@ -843,35 +765,12 @@ void uninitialize(void)
         }
     }
 
-    if (Stone_Texture)
+    if (Smiley_Texture)
     {
-        glDeleteTextures(1, &Stone_Texture);
-        Stone_Texture = 0;
+        glDeleteTextures(1, &Smiley_Texture);
+        Smiley_Texture = 0;
     }
-    if (Kundali_Texture)
-    {
-        glDeleteTextures(1, &Kundali_Texture);
-        Kundali_Texture = 0;
-    }
-
-    if (gVao_Pyramid)
-    {
-        glDeleteVertexArrays(1, &gVao_Pyramid);
-        gVao_Pyramid = 0;
-    }
-
-    if (gVbo_Pyramid_Position)
-    {
-        glDeleteBuffers(1, &gVbo_Pyramid_Position);
-        gVbo_Pyramid_Position = 0;
-    }
-
-    if (gVbo_Pyramid_Texture)
-    {
-        glDeleteBuffers(1, &gVbo_Pyramid_Texture);
-        gVbo_Pyramid_Texture = 0;
-    }
-
+    
     if (gVao_Cube)
     {
         glDeleteVertexArrays(1, &gVao_Cube);

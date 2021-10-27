@@ -20,6 +20,11 @@
 using namespace std;
 using namespace vmath;
 
+#define CHECK_IMAGE_WIDTH 64
+#define CHECK_IMAGE_HIGHT 64
+
+GLubyte Check_Image[CHECK_IMAGE_HIGHT][CHECK_IMAGE_WIDTH][4];
+
 enum
 {
     DVM_ATTTRIBUTE_POSITION = 0,
@@ -53,17 +58,12 @@ GLXFBConfig gGLXFBConfig;
 GLfloat P_angle = 0.0f;
 GLfloat C_angle = 0.0f;
 
-GLuint gVao_Pyramid;
-GLuint gVbo_Pyramid_Position;
-GLuint gVbo_Pyramid_Texture;
-
 GLuint gVao_Cube;
 GLuint gVbo_Cube_Position;
 GLuint gVbo_Cube_Texture;
 
-GLuint Stone_Texture = 0;
-GLuint Kundali_Texture = 0;
-
+int KeyPressed = 0;
+GLuint My_Texture = 0;
 GLuint texture_Sampler_Uniform;
 
 GLuint gMVPMatrixUniform;
@@ -131,6 +131,7 @@ int main(void)
                     break;
                 }
                 break;
+                
             /* Mouse Events */
             case ButtonPress:
                 switch (event.xbutton.button)
@@ -336,7 +337,7 @@ void CreateWindow(void)
         exit(1);
     }
 
-    XStoreName(gpDisplay, gWindow, "Darshan's OpenGL PP : 3D Pyramid Cube Texture.");
+    XStoreName(gpDisplay, gWindow, "Darshan's OpenGL PP : Checker Board.");
 
     Atom windowManagerDelete = XInternAtom(gpDisplay, "WM_DELETE_WINDOW", True);
     XSetWMProtocols(gpDisplay, gWindow, &windowManagerDelete, 1);
@@ -372,7 +373,7 @@ void ToggleFullscreen(void)
 void Initialize(void)
 {
     void Resize(int, int);
-    GLuint LoadBitmapAsTexture(const char *);
+    bool LoadGLTexture(GLuint*);
 
     //OpenGL PP
 
@@ -528,133 +529,34 @@ void Initialize(void)
 
     texture_Sampler_Uniform = glGetUniformLocation(gshaderProgramObject, "u_Texture_Sampler");
 
-    /*New for Pyramid*/
-    const GLfloat PyramidVertices[] =
-        {
-            0.0f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
+        /*New for Cube */
+    const GLfloat CubeVertices[] =
+    {
+        1.0f, 1.0f, 0.0f,
+       -1.0f, 1.0f, 0.0f,
+       -1.0f, -1.0f, 0.0f,
+       1.0f, -1.0f, 0.0f,
 
-            0.0f, 0.5f, 0.0f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, -0.5f,
-
-            0.0f, 0.5f, 0.0f,
-            0.5f, -0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            0.0f, 0.5f, 0.0f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f};
-    const GLfloat PyramidColor[] =
-        {
-            0.5f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-            0.5f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-
-            0.5f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-            0.5f, 1.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f};
-
-    /*New for Cube*/
-    const GLfloat Cube_Vertices[] =
-        {
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-
-            0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, 0.5f,
-            0.5f, -0.5f, 0.5f,
-            0.5f, -0.5f, -0.5f,
-
-            0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
-
-            -0.5f, 0.5f, -0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-
-            0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, 0.5f,
-            -0.5f, 0.5f, -0.5f,
-            0.5f, 0.5f, -0.5f,
-
-            0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, 0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f
-
-        };
+       2.41421f, 1.0f, -1.41421f,
+       1.0f, 1.0f, 0.0f,
+       1.0f, -1.0f, 0.0f,
+       2.41421f, -1.0f, -1.41421f
+    };
 
     const GLfloat CubeColor[] =
-        {
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
+    {
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
 
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f
 
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
+    };
 
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f
-
-        };
-
-    /*Pyramid Begen*/
-    glGenVertexArrays(1, &gVao_Pyramid);
-    glBindVertexArray(gVao_Pyramid);
-
-    /*Position */
-    glGenBuffers(1, &gVbo_Pyramid_Position);
-
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Pyramid_Position);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(PyramidVertices), PyramidVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    /*Color */
-    glGenBuffers(1, &gVbo_Pyramid_Texture);
-    glBindBuffer(GL_ARRAY_BUFFER, gVbo_Pyramid_Texture);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(PyramidColor), PyramidColor, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_TEXCORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
 
     /*CUBE Begen*/
     glGenVertexArrays(1, &gVao_Cube);
@@ -664,7 +566,7 @@ void Initialize(void)
     glGenBuffers(1, &gVbo_Cube_Position);
 
     glBindBuffer(GL_ARRAY_BUFFER, gVbo_Cube_Position);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Cube_Vertices), Cube_Vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), CubeVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -685,56 +587,61 @@ void Initialize(void)
     glDepthFunc(GL_LEQUAL);
 
 
-
     glEnable(GL_TEXTURE_2D);
-    Stone_Texture = LoadBitmapAsTexture("Stone.bmp");
-    if(Stone_Texture == 0)
-    {
-        printf("Unable to getthe Image...!!!\n");
-    }
-    Kundali_Texture = LoadBitmapAsTexture("Vijay_Kundali.bmp");
+
+    LoadGLTexture(&My_Texture);
 
     gPerspectiveProjectMatix = mat4::identity();
 
     Resize(giWindowWidth, giWindowHeight);
 }
 
-GLuint LoadBitmapAsTexture(const char *path)
+bool LoadGLTexture(GLuint* Text_Image)
 {
-    /*variable Declaration */
-    int Width, Height;
-    unsigned char *ImageData = NULL;
-    GLuint *Texture_ID;
+    //LOCAL VARIABLE
+    bool bResult = false;
 
-    /*Calling to soil to load Image (Its pixel data)*/
-    ImageData = SOIL_load_image(path,           /* path of image */
-                                &Width,         /* i'll return image width */
-                                &Height,        /* i'll return image Height */
-                                NULL,           /* i'll return chanels(numbers) */
-                                SOIL_LOAD_RGB); /* which type of chanels user want in images data (why RGB only :- cause it is 24 color bitmap( 8*3 
-	(R = 8 byte : G = 8 byte : B = 8 byte) = 24)) */
+    //Local Function
+    void MakeCheckImage(void);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-    glGenTextures(1, Texture_ID);
-    glBindTexture(GL_TEXTURE_2D, *Texture_ID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    //From here We are Starting the Texturing Code
 
-    /* Image could be in blue format if we give 6th parameter as GL_BGR_EXT 	 cause it is readable to windows.
-	here we are passing data to soil and soil understand GL_RGB .
-	
-	*Note : 1. In real .BMP is BGR.
-		2. Soil converts to BGR into BGR to RGB.
-	*/
-    //gluBuild2DMipmaps(GL_TEXTURE_2D, 3, Width, Height, GL_RGB, GL_UNSIGNED_BYTE, ImageData);
+    MakeCheckImage();
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, ImageData);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glGenTextures(1, Text_Image);
 
-    /*calling soil to delete Object which was taken by soil to create image data */
-    SOIL_free_image_data(ImageData);
+    glBindTexture(GL_TEXTURE_2D, *Text_Image);
 
-    return (*Texture_ID);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    //Setting Texture Param
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECK_IMAGE_WIDTH, CHECK_IMAGE_HIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, Check_Image);
+
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+    return (bResult);
+}
+
+void MakeCheckImage(void)
+{
+    int i, j, c;
+    for (i = 0; i < CHECK_IMAGE_HIGHT; i++)
+    {
+        for (j = 0; j < CHECK_IMAGE_WIDTH; j++)
+        {
+            c = (((i & 0x8) == 0) ^ ((j & 0x8) == 0)) * 255;
+
+            Check_Image[i][j][0] = (GLubyte)c;
+            Check_Image[i][j][1] = (GLubyte)c;
+            Check_Image[i][j][2] = (GLubyte)c;
+            Check_Image[i][j][3] = (GLubyte)c;
+        }
+    }
 }
 
 void Resize(int Width, int Height)
@@ -750,6 +657,7 @@ void Resize(int Width, int Height)
 
 void Render(void)
 {
+    
     void Update();
 
     /* Code Began */
@@ -758,52 +666,24 @@ void Render(void)
     glUseProgram(gshaderProgramObject);
 
     mat4 modelViewMatrix = mat4::identity();
-    mat4 RotationMatrtix = mat4::identity();
     mat4 TranslateMatrix = mat4::identity();
     mat4 modelViewProjectionMatrix = mat4::identity();
 
-    TranslateMatrix = vmath::translate(-1.0f, 0.0f, -4.0f);
-    RotationMatrtix = vmath::rotate(P_angle, 0.0f, 1.0f, 0.0f);
-    modelViewMatrix = TranslateMatrix * RotationMatrtix;
-    modelViewProjectionMatrix = gPerspectiveProjectMatix * modelViewMatrix;
-    glUniformMatrix4fv(gMVPMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
-    glUniform1i(texture_Sampler_Uniform, 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Stone_Texture);
-
-    glBindVertexArray(gVao_Pyramid);
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawArrays(GL_TRIANGLES, 3, 3);
-    glDrawArrays(GL_TRIANGLES, 6, 3);
-    glDrawArrays(GL_TRIANGLES, 9, 3);
-
-    glBindVertexArray(0);
-
-    modelViewProjectionMatrix = mat4::identity();
-    modelViewMatrix = mat4::identity();
-
-    TranslateMatrix = vmath::translate(1.0f, 0.0f, -4.0f);
-    RotationMatrtix = vmath::rotate(P_angle, 0.0f, 1.0f, 0.0f);
-    modelViewMatrix = TranslateMatrix * RotationMatrtix;
+    TranslateMatrix = vmath::translate(0.0f, 0.0f, -4.0f);
+    modelViewMatrix = TranslateMatrix;
     modelViewProjectionMatrix = gPerspectiveProjectMatix * modelViewMatrix;
 
     glUniformMatrix4fv(gMVPMatrixUniform, 1, GL_FALSE, modelViewProjectionMatrix);
     glUniform1i(texture_Sampler_Uniform, 0);
-
+    glBindTexture(GL_TEXTURE_2D, My_Texture);
+    
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, Kundali_Texture);
-
+    
     glBindVertexArray(gVao_Cube);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glDrawArrays(GL_TRIANGLE_FAN, 4, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 8, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 12, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 16, 4);
-    glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
-
+    
     glBindVertexArray(0);
 
     glUseProgram(0);
@@ -843,35 +723,12 @@ void uninitialize(void)
         }
     }
 
-    if (Stone_Texture)
+    if (My_Texture)
     {
-        glDeleteTextures(1, &Stone_Texture);
-        Stone_Texture = 0;
+        glDeleteTextures(1, &My_Texture);
+        My_Texture = 0;
     }
-    if (Kundali_Texture)
-    {
-        glDeleteTextures(1, &Kundali_Texture);
-        Kundali_Texture = 0;
-    }
-
-    if (gVao_Pyramid)
-    {
-        glDeleteVertexArrays(1, &gVao_Pyramid);
-        gVao_Pyramid = 0;
-    }
-
-    if (gVbo_Pyramid_Position)
-    {
-        glDeleteBuffers(1, &gVbo_Pyramid_Position);
-        gVbo_Pyramid_Position = 0;
-    }
-
-    if (gVbo_Pyramid_Texture)
-    {
-        glDeleteBuffers(1, &gVbo_Pyramid_Texture);
-        gVbo_Pyramid_Texture = 0;
-    }
-
+    
     if (gVao_Cube)
     {
         glDeleteVertexArrays(1, &gVao_Cube);
