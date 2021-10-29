@@ -906,7 +906,7 @@ void Initialize(void)
     glGenBuffers(1, &gVbo_sphere_position);
     glBindBuffer(GL_ARRAY_BUFFER, gVbo_sphere_position);
     glBufferData(GL_ARRAY_BUFFER, sizeof(sphere_vertices), sphere_vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glVertexAttribPointer(DVM_ATTTRIBUTE_POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL314
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_POSITION);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
