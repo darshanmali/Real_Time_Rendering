@@ -1,0 +1,5 @@
+1. Declare Vertext 
+2. Compile vertext shader code and get compiler converted binary code or error code if any.
+3. Create Vertex Shader
+4. Set Vertex Shader into PipeLine 
+5. 
