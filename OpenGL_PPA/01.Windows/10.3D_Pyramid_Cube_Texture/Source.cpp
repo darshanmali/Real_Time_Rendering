@@ -630,11 +630,10 @@ void Initialize()
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     glEnable(GL_TEXTURE_2D);
+    
     LoadGLTexture(&Stone_Texture, MAKEINTRESOURCE(STONE_BITMAP));
     LoadGLTexture(&Kundali_Texture, MAKEINTRESOURCE(KUNDALI_BITMAP));
 
-
-   
     gPerspectiveProjectMatix = mat4::identity();
 
 }

@@ -673,7 +673,6 @@ void Display()
     glDrawArrays(GL_TRIANGLE_FAN, 16, 4);
     glDrawArrays(GL_TRIANGLE_FAN, 20, 4);
 
-
     glBindVertexArray(0);
 
     glUseProgram(0);

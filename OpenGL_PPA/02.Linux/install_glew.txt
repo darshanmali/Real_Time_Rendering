@@ -1,0 +1,9 @@
+/* Installation of GLEW to new Linux */
+
+1. go to sourceforce site you can say i.e. glew install
+2. after downloading it extact it.
+3. go there with cmd and give below commands
+	
+	->make 
+	->sudo make install
+

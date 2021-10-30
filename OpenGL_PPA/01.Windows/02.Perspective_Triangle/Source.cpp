@@ -324,8 +324,8 @@ void Initialize()
     const GLchar* vertexShaderSourceCode =
         "#version 450 core" \
         "\n" \
-        "in vec4 vPosition;" \
-        "uniform mat4 u_mvp_matrix;" \
+                "in vec4 vPosition;" \
+"uniform mat4 u_mvp_matrix;" \
         "void main(void)" \
         "\n" \
         "{" \
