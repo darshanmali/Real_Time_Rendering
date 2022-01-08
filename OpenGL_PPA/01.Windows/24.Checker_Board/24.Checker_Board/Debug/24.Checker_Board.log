@@ -1,0 +1,3 @@
+﻿  Source.cpp
+C:\Users\malid\source\repos\darshanmali\OpenGL_PP\24.Checker_Board\24.Checker_Board\vmath.h(996,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  24.Checker_Board.vcxproj -> C:\Users\malid\source\repos\darshanmali\OpenGL_PP\24.Checker_Board\Debug\24.Checker_Board.exe

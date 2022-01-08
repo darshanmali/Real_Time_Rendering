@@ -1,0 +1,6 @@
+#include<Header.h>
+
+MYICON ICON DM.ico
+
+MYSMILEY BITMAP Smiley.bmp
+
