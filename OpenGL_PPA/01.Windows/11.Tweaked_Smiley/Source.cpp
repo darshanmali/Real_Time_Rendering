@@ -628,7 +628,6 @@ void Display()
     glEnableVertexAttribArray(DVM_ATTTRIBUTE_TEXCORD);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
     mat4 modelViewMatrix;
     mat4 TranslateMatrix;
     mat4 modelViewProjectionMatrix;
