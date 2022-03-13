@@ -1,0 +1,347 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5C5CA807273DB7FC00FB22FF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CA800273DB7FC00FB22FF /* main.m */; };
+		5C5CA808273DB7FC00FB22FF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CA801273DB7FC00FB22FF /* AppDelegate.m */; };
+		5C5CA809273DB7FC00FB22FF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CA803273DB7FC00FB22FF /* ViewController.m */; };
+		5C5CA80A273DB7FC00FB22FF /* GLESView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CA805273DB7FC00FB22FF /* GLESView.mm */; };
+		5C5CA80E273DB82500FB22FF /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C5CA80D273DB82500FB22FF /* OpenGLES.framework */; };
+		5C653D86273DA40C0067D3DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C653D85273DA40C0067D3DF /* Assets.xcassets */; };
+		5C73AEF927D69AD10025616F /* Stone.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 5C73AEF727D69AD10025616F /* Stone.bmp */; };
+		5C73AEFA27D69AD10025616F /* Vijay_Kundali.bmp in Resources */ = {isa = PBXBuildFile; fileRef = 5C73AEF827D69AD10025616F /* Vijay_Kundali.bmp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5C02CFD827D648F2001E5D56 /* vmath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vmath.h; sourceTree = "<group>"; };
+		5C5CA800273DB7FC00FB22FF /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5C5CA801273DB7FC00FB22FF /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		5C5CA802273DB7FC00FB22FF /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		5C5CA803273DB7FC00FB22FF /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		5C5CA804273DB7FC00FB22FF /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		5C5CA805273DB7FC00FB22FF /* GLESView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GLESView.mm; sourceTree = "<group>"; };
+		5C5CA806273DB7FC00FB22FF /* GLESView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLESView.h; sourceTree = "<group>"; };
+		5C5CA80D273DB82500FB22FF /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		5C653D76273DA3F60067D3DF /* 02.BlueScreen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 02.BlueScreen.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C653D85273DA40C0067D3DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5C653D8A273DA40C0067D3DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5C73AEF727D69AD10025616F /* Stone.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = Stone.bmp; sourceTree = SOURCE_ROOT; };
+		5C73AEF827D69AD10025616F /* Vijay_Kundali.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = Vijay_Kundali.bmp; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5C653D73273DA3F60067D3DF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C5CA80E273DB82500FB22FF /* OpenGLES.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5C5CA80C273DB82400FB22FF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5C5CA80D273DB82500FB22FF /* OpenGLES.framework */,
+			);
+			name = Frameworks;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		5C653D6D273DA3F60067D3DF = {
+			isa = PBXGroup;
+			children = (
+				5C653D78273DA3F60067D3DF /* 02.BlueScreen */,
+				5C653D77273DA3F60067D3DF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5C653D77273DA3F60067D3DF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5C653D76273DA3F60067D3DF /* 02.BlueScreen.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5C653D78273DA3F60067D3DF /* 02.BlueScreen */ = {
+			isa = PBXGroup;
+			children = (
+				5C73AEF727D69AD10025616F /* Stone.bmp */,
+				5C73AEF827D69AD10025616F /* Vijay_Kundali.bmp */,
+				5C02CFD827D648F2001E5D56 /* vmath.h */,
+				5C5CA802273DB7FC00FB22FF /* AppDelegate.h */,
+				5C5CA801273DB7FC00FB22FF /* AppDelegate.m */,
+				5C5CA800273DB7FC00FB22FF /* main.m */,
+				5C5CA806273DB7FC00FB22FF /* GLESView.h */,
+				5C5CA805273DB7FC00FB22FF /* GLESView.mm */,
+				5C5CA804273DB7FC00FB22FF /* ViewController.h */,
+				5C5CA803273DB7FC00FB22FF /* ViewController.m */,
+				5C653D85273DA40C0067D3DF /* Assets.xcassets */,
+				5C653D8A273DA40C0067D3DF /* Info.plist */,
+				5C5CA80C273DB82400FB22FF /* Frameworks */,
+			);
+			path = 02.BlueScreen;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5C653D75273DA3F60067D3DF /* 02.BlueScreen */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5C653D8F273DA40C0067D3DF /* Build configuration list for PBXNativeTarget "02.BlueScreen" */;
+			buildPhases = (
+				5C653D72273DA3F60067D3DF /* Sources */,
+				5C653D73273DA3F60067D3DF /* Frameworks */,
+				5C653D74273DA3F60067D3DF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = 02.BlueScreen;
+			productName = 02.BlueScreen;
+			productReference = 5C653D76273DA3F60067D3DF /* 02.BlueScreen.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5C653D6E273DA3F60067D3DF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1210;
+				TargetAttributes = {
+					5C653D75273DA3F60067D3DF = {
+						CreatedOnToolsVersion = 12.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 5C653D71273DA3F60067D3DF /* Build configuration list for PBXProject "02.BlueScreen" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5C653D6D273DA3F60067D3DF;
+			productRefGroup = 5C653D77273DA3F60067D3DF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5C653D75273DA3F60067D3DF /* 02.BlueScreen */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5C653D74273DA3F60067D3DF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C653D86273DA40C0067D3DF /* Assets.xcassets in Resources */,
+				5C73AEF927D69AD10025616F /* Stone.bmp in Resources */,
+				5C73AEFA27D69AD10025616F /* Vijay_Kundali.bmp in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5C653D72273DA3F60067D3DF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C5CA80A273DB7FC00FB22FF /* GLESView.mm in Sources */,
+				5C5CA809273DB7FC00FB22FF /* ViewController.m in Sources */,
+				5C5CA808273DB7FC00FB22FF /* AppDelegate.m in Sources */,
+				5C5CA807273DB7FC00FB22FF /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5C653D8D273DA40C0067D3DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		5C653D8E273DA40C0067D3DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5C653D90273DA40C0067D3DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 848GF4Z6BR;
+				INFOPLIST_FILE = 02.BlueScreen/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "A1HomeSeva.-2-BlueScreen";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		5C653D91273DA40C0067D3DF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 848GF4Z6BR;
+				INFOPLIST_FILE = 02.BlueScreen/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "A1HomeSeva.-2-BlueScreen";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5C653D71273DA3F60067D3DF /* Build configuration list for PBXProject "02.BlueScreen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5C653D8D273DA40C0067D3DF /* Debug */,
+				5C653D8E273DA40C0067D3DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5C653D8F273DA40C0067D3DF /* Build configuration list for PBXNativeTarget "02.BlueScreen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5C653D90273DA40C0067D3DF /* Debug */,
+				5C653D91273DA40C0067D3DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5C653D6E273DA3F60067D3DF /* Project object */;
+}

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>10</integer>
+	<key>logs</key>
+	<dict>
+		<key>51CAD0EC-E7BE-4D66-B018-AD5A5FD50BEF</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>51CAD0EC-E7BE-4D66-B018-AD5A5FD50BEF.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>02.BlueScreen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>02.BlueScreen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Build 02.BlueScreen</string>
+			<key>timeStartedRecording</key>
+			<real>668354425.71562696</real>
+			<key>timeStoppedRecording</key>
+			<real>668354426.48062301</real>
+			<key>title</key>
+			<string>Build 02.BlueScreen</string>
+			<key>uniqueIdentifier</key>
+			<string>51CAD0EC-E7BE-4D66-B018-AD5A5FD50BEF</string>
+		</dict>
+		<key>72932E05-45F4-433E-AD42-A5218DA9BC4C</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>72932E05-45F4-433E-AD42-A5218DA9BC4C.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>02.BlueScreen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>02.BlueScreen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Clean 02.BlueScreen</string>
+			<key>timeStartedRecording</key>
+			<real>668354364.34217703</real>
+			<key>timeStoppedRecording</key>
+			<real>668354365.24232495</real>
+			<key>title</key>
+			<string>Clean 02.BlueScreen</string>
+			<key>uniqueIdentifier</key>
+			<string>72932E05-45F4-433E-AD42-A5218DA9BC4C</string>
+		</dict>
+		<key>8B5C90D0-D8C2-48A6-A05D-7CC91C7816DE</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>8B5C90D0-D8C2-48A6-A05D-7CC91C7816DE.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>02.BlueScreen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>02.BlueScreen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Clean 02.BlueScreen</string>
+			<key>timeStartedRecording</key>
+			<real>668354362.37474298</real>
+			<key>timeStoppedRecording</key>
+			<real>668354365.49848104</real>
+			<key>title</key>
+			<string>Clean 02.BlueScreen</string>
+			<key>uniqueIdentifier</key>
+			<string>8B5C90D0-D8C2-48A6-A05D-7CC91C7816DE</string>
+		</dict>
+		<key>E5F66B64-8696-4FDE-820E-3BB376464BB0</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>E5F66B64-8696-4FDE-820E-3BB376464BB0.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>02.BlueScreen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>02.BlueScreen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Build 02.BlueScreen</string>
+			<key>timeStartedRecording</key>
+			<real>668354390.50155699</real>
+			<key>timeStoppedRecording</key>
+			<real>668354422.46447396</real>
+			<key>title</key>
+			<string>Build 02.BlueScreen</string>
+			<key>uniqueIdentifier</key>
+			<string>E5F66B64-8696-4FDE-820E-3BB376464BB0</string>
+		</dict>
+		<key>EF82D9AE-1EEE-49F3-84CC-0FD368C45105</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>EF82D9AE-1EEE-49F3-84CC-0FD368C45105.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>02.BlueScreen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>02.BlueScreen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Build 02.BlueScreen</string>
+			<key>timeStartedRecording</key>
+			<real>668328802.98972797</real>
+			<key>timeStoppedRecording</key>
+			<real>668328803.03629899</real>
+			<key>title</key>
+			<string>Build 02.BlueScreen</string>
+			<key>uniqueIdentifier</key>
+			<string>EF82D9AE-1EEE-49F3-84CC-0FD368C45105</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

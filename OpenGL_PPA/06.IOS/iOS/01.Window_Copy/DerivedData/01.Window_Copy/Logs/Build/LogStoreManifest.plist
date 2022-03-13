@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>10</integer>
+	<key>logs</key>
+	<dict>
+		<key>273B1E33-8316-4CAF-8EDD-36B19B67568A</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>273B1E33-8316-4CAF-8EDD-36B19B67568A.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>01.Window_Copy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>01.Window_Copy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Build 01.Window_Copy</string>
+			<key>timeStartedRecording</key>
+			<real>658121172.66275406</real>
+			<key>timeStoppedRecording</key>
+			<real>658121476.48215604</real>
+			<key>title</key>
+			<string>Build 01.Window_Copy</string>
+			<key>uniqueIdentifier</key>
+			<string>273B1E33-8316-4CAF-8EDD-36B19B67568A</string>
+		</dict>
+		<key>47DFBE5C-789A-4C09-A373-834EA031DE16</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>47DFBE5C-789A-4C09-A373-834EA031DE16.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>01.Window_Copy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>01.Window_Copy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Build 01.Window_Copy</string>
+			<key>timeStartedRecording</key>
+			<real>658121485.98913801</real>
+			<key>timeStoppedRecording</key>
+			<real>658121486.56006801</real>
+			<key>title</key>
+			<string>Build 01.Window_Copy</string>
+			<key>uniqueIdentifier</key>
+			<string>47DFBE5C-789A-4C09-A373-834EA031DE16</string>
+		</dict>
+		<key>70B61640-D247-4143-96E3-A151BCE9CE4B</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>70B61640-D247-4143-96E3-A151BCE9CE4B.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>W</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>01.Window_Copy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>01.Window_Copy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Build 01.Window_Copy</string>
+			<key>timeStartedRecording</key>
+			<real>658121619.82906699</real>
+			<key>timeStoppedRecording</key>
+			<real>658121620.52083099</real>
+			<key>title</key>
+			<string>Build 01.Window_Copy</string>
+			<key>uniqueIdentifier</key>
+			<string>70B61640-D247-4143-96E3-A151BCE9CE4B</string>
+		</dict>
+		<key>ED8CFCBB-D5BE-4792-ACC2-88166402C7B0</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>ED8CFCBB-D5BE-4792-ACC2-88166402C7B0.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>01.Window_Copy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>01.Window_Copy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Clean 01.Window_Copy</string>
+			<key>timeStartedRecording</key>
+			<real>658119441.47114098</real>
+			<key>timeStoppedRecording</key>
+			<real>658119524.81590199</real>
+			<key>title</key>
+			<string>Clean 01.Window_Copy</string>
+			<key>uniqueIdentifier</key>
+			<string>ED8CFCBB-D5BE-4792-ACC2-88166402C7B0</string>
+		</dict>
+		<key>F8B286C4-1E0D-4BF5-95FE-78D1124797BF</key>
+		<dict>
+			<key>className</key>
+			<string>IDEActivityLogSection</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>F8B286C4-1E0D-4BF5-95FE-78D1124797BF.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>01.Window_Copy project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>01.Window_Copy</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Clean 01.Window_Copy</string>
+			<key>timeStartedRecording</key>
+			<real>658121152.00588298</real>
+			<key>timeStoppedRecording</key>
+			<real>658121153.76640499</real>
+			<key>title</key>
+			<string>Clean 01.Window_Copy</string>
+			<key>uniqueIdentifier</key>
+			<string>F8B286C4-1E0D-4BF5-95FE-78D1124797BF</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
