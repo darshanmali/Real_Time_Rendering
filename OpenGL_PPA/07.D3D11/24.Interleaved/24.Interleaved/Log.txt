@@ -1,0 +1,28 @@
+Log File Is Successfully Opened.
+D3D11CreateDeviceAndSwapChain() Succeeded...
+The Chosen Driver Is Of 
+Hardware Type.
+
+The Supported Highest Feature level Is 
+11.0.
+D3D11Compile() Succeeded For VErtex Shader.
+D3D11Devices::Create VErtexShader() Succeedded.
+D3D11Compile() Succeeded For Pixel Shader.
+D3D11Devices::CreatePixelShader() Succeedded.
+ID3D11Device::CreateInputLayout() Succeeded. 
+ID3D11Device::CreateBuffer() Succeeded for Vertex_Rect Buffer. 
+ID3D11Device::CreateBuffer() Succeeded for color_Rect Buffer. 
+ID3D11Device::CreateBuffer() Succeeded for Cube_vertices Buffer. 
+ID3D11Device::CreateBuffer() Succeeded for color_Rect Buffer. 
+ID3D11Device::CreateBuffer() Succeeded For Constant Buffer. 
+gpID3D11Device->CreateRasterizerState() succed For Rasterize struct 
+DirectX::CreateWICTextureFromFile() Succeeded...
+gpID3D11Device->Load_D3D_Texture() succed For Loading Texture.
+gpID3D11Device->Load_D3D_Texture() succed For Creating Sampler State.
+ID3D11Device::CreateRenderTargetView() Succeeded...
+ID3D11Device::CreateTexture2D() for DepthBuffer Succeeded...
+ID3D11Device::CreateDepthStencilView() for Depth Staincil View Succeeded...
+Resize() Succeeded...
+Initialize() Succeeded...
+UnInitialize() Succeeded
+Log File is Successfully Closed.

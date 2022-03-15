@@ -1,3 +1,0 @@
-Program started SuccessFully..!
-
-Program terminated successfully.

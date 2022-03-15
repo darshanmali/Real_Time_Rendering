@@ -1,7 +1,0 @@
-#include<Header.h>
-
-MYICON ICON DM.ico
-
-MYSOUND NEWSOUND "New_3.wav"
-
-

@@ -1,0 +1,2 @@
+﻿Source.obj : error LNK2001: unresolved external symbol "long __cdecl DirectX::CreateWICTextureFromFile(struct ID3D11Device *,struct ID3D11DeviceContext *,wchar_t const *,struct ID3D11Resource * *,struct ID3D11ShaderResourceView * *,unsigned int)" (?CreateWICTextureFromFile@DirectX@@YAJPAUID3D11Device@@PAUID3D11DeviceContext@@PB_WPAPAUID3D11Resource@@PAPAUID3D11ShaderResourceView@@I@Z)
+C:\Users\darshan\source\repos\D3D\22.checker_Board\Release\22.checker_Board.exe : fatal error LNK1120: 1 unresolved externals
